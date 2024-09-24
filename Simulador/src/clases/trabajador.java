@@ -2,7 +2,7 @@
 package clases;
 
 
-public class trabajador {
+public class Trabajador {
     private int id;
     private String rol;
     private int salarioPorHora;
@@ -12,7 +12,7 @@ public class trabajador {
     private boolean activo;
 
     // Constructor
-    public trabajador(int id, String rol, int salarioPorHora, int produccionPorDia, int diasParaGenerarProducto, boolean activo) {
+    public Trabajador(int id, String rol, int salarioPorHora, int produccionPorDia, int diasParaGenerarProducto, boolean activo) {
         this.id = id;
         this.rol = rol;
         this.salarioPorHora = salarioPorHora;
