@@ -2,6 +2,6 @@
 package clases;
 
 
-public class controlador {
+public class Controlador {
     
 }
