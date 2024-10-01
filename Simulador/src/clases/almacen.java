@@ -23,7 +23,7 @@ public class Almacen implements Runnable {
     
     @Override
     public  void run(){
-        
+
     }
     
 }  

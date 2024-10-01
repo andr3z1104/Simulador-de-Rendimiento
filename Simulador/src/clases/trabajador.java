@@ -9,19 +9,20 @@ public class Trabajador {
     private int dineroAcumulado;
     private int produccionPorDia;
     private int diasParaGenerarProducto;
-    private boolean activo;
+    private int activo;
 
     // Constructor
-    public Trabajador(int id, String rol, int salarioPorHora, int produccionPorDia, int diasParaGenerarProducto, boolean activo) {
+    public Trabajador(int id, String rol, int salarioPorHora, int produccionPorDia, int diasParaGenerarProducto, int activo) {
         this.id = id;
         this.rol = rol;
         this.salarioPorHora = salarioPorHora;
         this.dineroAcumulado = 0;
         this.produccionPorDia = produccionPorDia;
         this.diasParaGenerarProducto = diasParaGenerarProducto;
-        this.activo = activo;
+        this.activo = 1;
     }
 
+     //0 inactivo, 1 activo, 2 espera
     // Getters y Setters
 
     public int getId() {
@@ -68,11 +69,11 @@ public class Trabajador {
         this.diasParaGenerarProducto = diasParaGenerarProducto;
     }
 
-    public boolean isActivo() {
+    public int isActivo() {
         return activo;
     }
 
-    public void setActivo(boolean activo) {
+    public void setActivo(int activo) {
         this.activo = activo;
     }
 }
