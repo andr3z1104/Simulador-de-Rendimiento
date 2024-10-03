@@ -1,37 +1,39 @@
 
 package clases;
 
+
 /**
  *
  * @author user
  */
 public class Empresa {
     private String nombre;
-    private Lista listaTrabajadores;
+    public Trabajador[] listaTrabajadores;
     private int gananciasBrutas;
     private int costoOperaciones;
     private int Utilidad;
     private int computadorasProducidas;
     private int computadorasTarjetaGrafica;
     private int deadLine;
+    
 
-    public Empresa(String nombre, Lista listaTrabajadores, int deadLine) {
+    public Empresa(String nombre, int deadLine) {
         this.nombre = nombre;
-        this.listaTrabajadores = listaTrabajadores;
         this.gananciasBrutas = 0;
         this.costoOperaciones = 0;
         this.Utilidad = 0;
         this.computadorasProducidas = 0;
         this.computadorasTarjetaGrafica = 0;
         this.deadLine = deadLine;
+        this.listaTrabajadores = new Trabajador[22];
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public Lista getListaTrabajadores() {
-        return listaTrabajadores;
+    public Trabajador getTrabajador(int ced) {
+        return listaTrabajadores[ced];
     }
 
     public int getGananciasBrutas() {
@@ -80,5 +82,23 @@ public class Empresa {
 
     public void setDeadLine(int deadLine) {
         this.deadLine = deadLine;
+    }
+    
+    public void crearTrabajadores(){
+        for (int i = 0; i < 22; i++) {
+            //project manager
+            if (i == 20){
+                
+            }
+            //director
+            if (i == 21){
+                
+            }
+            else{
+                Trabajador trabajador = new Trabajador(i);
+                listaTrabajadores[i] = trabajador;
+            }
+            
+        }
     }
 }

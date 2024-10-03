@@ -6,11 +6,9 @@
 package clases;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,6 +24,7 @@ public class Txt {
     public int fuenteAlimentacion;
     public int tarjetaGrafica;
     public int ensamblador;
+    public int cantidadTrabajadoresActivos;
 
 
     public Txt() {
@@ -37,6 +36,7 @@ public class Txt {
         this.fuenteAlimentacion = 0;
         this.tarjetaGrafica = 0;
         this.ensamblador = 0;
+        this.cantidadTrabajadoresActivos = 0;
     }
     
     public String Seleccionar(){
@@ -78,18 +78,19 @@ public class Txt {
                     String lineaConComa = lineas[i].toString();
                     String[] numeros = lineaConComa.split(",");
 
-                    if (numeros.length < 6) {
-                        throw new IllegalArgumentException("Error, datos invalidos");
+                    if (numeros.length != 6) {
+                        throw new IllegalArgumentException("Error, datos invalidos.");
                     }
 
                     int suma = 0;
                     for (int index = 0; index < 6; index++) {
                         int numero = Integer.parseInt(numeros[index]);
-                        if (numero > 0) {
-                            suma += numero;
+                        if (numero <= 0) {
+                            throw new IllegalArgumentException("Error, datos invalidos.");
                         }
+                        suma += numero;
                         if (suma > 20) {
-                            return;
+                            throw new IllegalArgumentException("Error, mas de 20 trabajadores ingresados.");
                         }
                     }
 
@@ -99,15 +100,8 @@ public class Txt {
                     this.fuenteAlimentacion = Integer.parseInt(numeros[3]);
                     this.tarjetaGrafica = Integer.parseInt(numeros[4]);
                     this.ensamblador = Integer.parseInt(numeros[5]);
+                    this.cantidadTrabajadoresActivos = suma;
 
-//                    System.out.println("segundosXdia: " + this.segundosXdia);
-//                    System.out.println("deadline: " + this.deadline);
-//                    System.out.println("placaBase: " + this.placaBase);
-//                    System.out.println("cpu: " + this.cpu);
-//                    System.out.println("ram: " + this.ram);
-//                    System.out.println("fuenteAlimentacion: " + this.fuenteAlimentacion);
-//                    System.out.println("tarjetaGrafica: " + this.tarjetaGrafica);
-//                    System.out.println("ensamblador: " + this.ensamblador);
                 }
             }
         } catch (NumberFormatException e) {

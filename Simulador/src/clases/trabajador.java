@@ -3,25 +3,24 @@ package clases;
 
 
 public class Trabajador {
-    private int id;
+    private final int id;
     private String rol;
     private int salarioPorHora;
     private int dineroAcumulado;
     private int produccionPorDia;
     private int diasParaGenerarProducto;
     private int activo;
+    private String[] roles;
 
     // Constructor
-    public Trabajador(int id, String rol, int salarioPorHora, int produccionPorDia, int diasParaGenerarProducto, int activo) {
+    public Trabajador(int id) {
         this.id = id;
-        this.rol = rol;
-        this.salarioPorHora = salarioPorHora;
         this.dineroAcumulado = 0;
-        this.produccionPorDia = produccionPorDia;
-        this.diasParaGenerarProducto = diasParaGenerarProducto;
-        this.activo = 1;
+        this.activo = 0;
+        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
     }
 
+    
      //0 inactivo, 1 activo, 2 espera
     // Getters y Setters
 
@@ -33,11 +32,11 @@ public class Trabajador {
         return rol;
     }
     
-    public void setRol(String Rol) {
-        this.rol = Rol;
+    public void setRol(int index) {
+        this.rol = roles[index];
     }
 
-    public double getSalarioPorHora() {
+    public int getSalarioPorHora() {
         return salarioPorHora;
     }
 
