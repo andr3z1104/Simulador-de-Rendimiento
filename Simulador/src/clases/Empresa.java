@@ -15,6 +15,10 @@ public class Empresa {
     private int computadorasProducidas;
     private int computadorasTarjetaGrafica;
     private int deadLine;
+    private int staticDeadline;
+    private int horasOcio;
+    private int intervaloOcio;
+    private int horasActivas;
     
 
     public Empresa(String nombre, int deadLine) {
@@ -25,6 +29,7 @@ public class Empresa {
         this.computadorasProducidas = 0;
         this.computadorasTarjetaGrafica = 0;
         this.deadLine = deadLine;
+        this.staticDeadline = deadLine;
         this.listaTrabajadores = new Trabajador[22];
     }
 
@@ -101,4 +106,17 @@ public class Empresa {
             
         }
     }
+    
+    public void pasarDia(int id){
+        if (this.deadLine > 0 && id == 20){
+            this.deadLine -= 1;
+            if (this.deadLine == 0){
+                //funcion para que el director envia las computadoras, le toma 24 horas en las que no podra ver si el otaco ve anime o no, y luego de ese tiempo reinicia el contador: this.deadLine = this.staticDeadline.
+            }
+        }
+        else{
+            throw new IllegalArgumentException("Error, el trabajador ingresado no puede realizar esta funcion.");
+        }
+    }
+    
 }

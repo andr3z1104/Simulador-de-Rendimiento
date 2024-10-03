@@ -7,10 +7,11 @@ public class Trabajador {
     private String rol;
     private int salarioPorHora;
     private int dineroAcumulado;
-    private int produccionPorDia;
-    private int diasParaGenerarProducto;
+    private double diasParaGenerarProducto;
     private int activo;
     private String[] roles;
+    private int[] salarios;
+    private double[] dias;
 
     // Constructor
     public Trabajador(int id) {
@@ -18,6 +19,8 @@ public class Trabajador {
         this.dineroAcumulado = 0;
         this.activo = 0;
         this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
+        this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
+        this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
     }
 
     
@@ -32,16 +35,23 @@ public class Trabajador {
         return rol;
     }
     
-    public void setRol(int index) {
+    public void desactivar(){
+        this.activo = 0;
+    }
+    
+    public void esperar(){
+        this.activo = 2;
+    }
+    
+    public void setRol(int index, int segundosXdia) {
         this.rol = roles[index];
+        this.salarioPorHora = salarios[index];
+        this.diasParaGenerarProducto = dias[index] * segundosXdia;
+        this.activo = 1;
     }
 
     public int getSalarioPorHora() {
         return salarioPorHora;
-    }
-
-    public void setSalarioPorHora(int salarioPorHora) {
-        this.salarioPorHora = salarioPorHora;
     }
 
     public int getDineroAcumulado() {
@@ -52,27 +62,12 @@ public class Trabajador {
         this.dineroAcumulado = dineroAcumulado;
     }
 
-    public int getProduccionPorDia() {
-        return produccionPorDia;
-    }
-
-    public void setProduccionPorDia(int produccionPorDia) {
-        this.produccionPorDia = produccionPorDia;
-    }
-
-    public int getDiasParaGenerarProducto() {
+    public double getDiasParaGenerarProducto() {
         return diasParaGenerarProducto;
-    }
-
-    public void setDiasParaGenerarProducto(int diasParaGenerarProducto) {
-        this.diasParaGenerarProducto = diasParaGenerarProducto;
     }
 
     public int isActivo() {
         return activo;
     }
-
-    public void setActivo(int activo) {
-        this.activo = activo;
-    }
+    
 }

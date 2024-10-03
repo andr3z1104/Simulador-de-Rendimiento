@@ -12,11 +12,14 @@ public class Main {
 //            System.out.println(claaase.cantidadTrabajadoresActivos);
 
             Trabajador t = new Trabajador(0);
-            t.setSalarioPorHora(69);
-            System.out.println(t.getSalarioPorHora());
-            t.setRol(7);
+//           t.setSalarioPorHora(69);
+//           System.out.println(t.getSalarioPorHora());
+            t.setRol(3,5);
             System.out.println(t.getRol());
-
+            System.out.println(t.getSalarioPorHora());
+            System.out.println(t.getDiasParaGenerarProducto());
+            System.out.println(t.isActivo());
+            
     //        Empresa empresa = new Empresa("pepo", 8);
    //         empresa.crearTrabajadores();
   //          for (int i = 0; i < 22; i++) {
