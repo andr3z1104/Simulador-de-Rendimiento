@@ -2,8 +2,8 @@
 package clases;
 
 
-public class Trabajador {
-    public final int id;
+public class Trabajador extends Thread {
+    public final int ide;
     public String rol;
     public int salarioPorHora;
     public int dineroAcumulado;
@@ -21,7 +21,7 @@ public class Trabajador {
     
     // Constructor
     public Trabajador(int id) {
-        this.id = id;
+        this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
         this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
@@ -38,8 +38,8 @@ public class Trabajador {
      //0 inactivo, 1 activo, 2 espera
     // Getters y Setters
 
-    public int getId() {
-        return id;
+    public int getIde() {
+        return ide;
     }
 
     public String getRol() {
@@ -98,5 +98,24 @@ public class Trabajador {
     public int isActivo() {
         return activo;
     }
+    
+    //Metodo para simular que esta trabajando
+    @Override
+    public void run(){
+            
+        for (int i = 0; i < 5; i++) {
+              System.out.println("Verificacion del siguiente ID:" +i);
+            try{
+                Thread.sleep(500);
+            }catch (InterruptedException e ){
+                e.printStackTrace();
+            }
+            
+             System.out.println("Verificacion terminada");
+        }
+       
+        }
+          
+
     
 }

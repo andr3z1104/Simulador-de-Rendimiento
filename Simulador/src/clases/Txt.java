@@ -15,7 +15,6 @@ import javax.swing.JFileChooser;
  * @author user
  */
 public class Txt {
-
     public int segundosXdia;
     public int deadline;
     public int placaBase;
@@ -25,7 +24,7 @@ public class Txt {
     public int tarjetaGrafica;
     public int ensamblador;
     public int cantidadTrabajadoresActivos;
-
+    //public Trabajador[] listaTrabajadores;
 
     public Txt() {
         this.segundosXdia = 0;
@@ -37,6 +36,7 @@ public class Txt {
         this.tarjetaGrafica = 0;
         this.ensamblador = 0;
         this.cantidadTrabajadoresActivos = 0;
+      //  this.listaTrabajadores = new  Trabajador[22];
     }
     
     public String Seleccionar(){
@@ -101,6 +101,7 @@ public class Txt {
                     this.tarjetaGrafica = Integer.parseInt(numeros[4]);
                     this.ensamblador = Integer.parseInt(numeros[5]);
                     this.cantidadTrabajadoresActivos = suma;
+                    
 
                 }
             }
@@ -111,4 +112,9 @@ public class Txt {
         }
     }
 
+    public Controlador crearControlador(int segundosXdia, int deadline, int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador, int trabajadoresActivos){
+        Controlador controlador = new Controlador(segundosXdia,deadline,placa,  cpu,  ram, fuente, tarjeta, ensamblador, trabajadoresActivos);
+        
+        return controlador;
+    }
 }

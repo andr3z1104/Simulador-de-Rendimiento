@@ -128,7 +128,7 @@ public class Empresa {
         return activos;
     }
     
-    //cantidad: cantidad de trabajadores a asignar. area: rango a asignar
+    //cantidad: cantidad de trabajadores a asignar. area: rol  a asignar
     public void asignarArea(int cantidad, int area) {
         try{
             int[] inactivos = trabajadoresInactivos();
