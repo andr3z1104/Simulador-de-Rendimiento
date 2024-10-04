@@ -7,21 +7,19 @@ package clases;
  * @author user
  */
 public class Empresa {
-    private String nombre;
+    public String nombre;
     public Trabajador[] listaTrabajadores;
-    private int gananciasBrutas;
-    private int costoOperaciones;
-    private int Utilidad;
-    private int computadorasProducidas;
-    private int computadorasTarjetaGrafica;
-    private int deadLine;
-    private int staticDeadline;
-    private int horasOcio;
-    private int intervaloOcio;
-    private int horasActivas;
+    public int gananciasBrutas;
+    public int costoOperaciones;
+    public int Utilidad;
+    public int computadorasProducidas;
+    public int computadorasTarjetaGrafica;
+    public int deadLine;
+    public int staticDeadline;
+    public int segundosXdia;
     
 
-    public Empresa(String nombre, int deadLine) {
+    public Empresa(String nombre, int deadLine, int segundosXdia) {
         this.nombre = nombre;
         this.gananciasBrutas = 0;
         this.costoOperaciones = 0;
@@ -31,6 +29,8 @@ public class Empresa {
         this.deadLine = deadLine;
         this.staticDeadline = deadLine;
         this.listaTrabajadores = new Trabajador[22];
+        this.segundosXdia = segundosXdia;
+
     }
 
     public String getNombre() {
@@ -89,24 +89,89 @@ public class Empresa {
         this.deadLine = deadLine;
     }
     
-    public void crearTrabajadores(){
+    //ve el ejemplo que te deje en el main para que veas como funciona
+    //no se de donde podriamos meter estos valores
+    public void crearTrabajadores(int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador){
         for (int i = 0; i < 22; i++) {
+            Trabajador trabajador = new Trabajador(i);
+            listaTrabajadores[i] = trabajador;
+            
             //project manager
             if (i == 20){
-                
+                listaTrabajadores[i].setRol(6, this.segundosXdia);
             }
             //director
             if (i == 21){
-                
-            }
-            else{
-                Trabajador trabajador = new Trabajador(i);
-                listaTrabajadores[i] = trabajador;
+                listaTrabajadores[i].setRol(7, this.segundosXdia);
             }
             
         }
+        
+        int contador = 0;
+        int[] componentes = {placa, cpu, ram, fuente, tarjeta, ensamblador};
+
+        for (int rol = 0; rol < componentes.length; rol++) {
+            for (int i = 0; i < componentes[rol]; i++) {
+                listaTrabajadores[contador].setRol(rol, segundosXdia);
+                contador++;
+            }
+        }
+
     }
     
+    //considero esta funcion conveniente si se buscan los trabajadores inactivos. 1 = activo, 0 = inactivo
+    public int[] trabajadoresInactivos(){
+        int[] activos = new int[22];
+        for (int i = 0; i < listaTrabajadores.length; i++) {
+            activos[i] = listaTrabajadores[i].activo;
+        }
+        return activos;
+    }
+    
+    //cantidad: cantidad de trabajadores a asignar. area: rango a asignar
+    public void asignarArea(int cantidad, int area) {
+        try{
+            int[] inactivos = trabajadoresInactivos();
+            int contador = 0;
+
+            for (int inactivo : inactivos) {
+                if (inactivo == 0) {
+                    contador++;
+                }
+            }
+
+            if (contador < cantidad) {
+                throw new IllegalArgumentException("Error, cantidad de trabajadores excedida.");
+            }
+
+            for (int i = 0; i < inactivos.length && cantidad > 0; i++) {
+                if (inactivos[i] == 0) {
+                    listaTrabajadores[i].setRol(area, segundosXdia);
+                    cantidad--;
+                }
+            }
+        }
+        catch (IllegalArgumentException e){
+            System.out.println("Error, cantidad de trabajadores excedida.");
+        }
+}
+
+    
+    //POR PROBAR pasa del estado activo o espera a inactivo
+    public void inhabilitar(int id){
+        try{
+            int[] activos = trabajadoresInactivos();
+            if (activos[id] == 0){
+                throw new IllegalArgumentException("Error, trabajador ya inactivo.");
+            }
+            listaTrabajadores[id].desactivar();
+        }
+        catch (IllegalArgumentException e){
+            System.out.println("Error, trabajador ya inactivo.");
+        }
+    }
+    
+    //SIN TERMINAR
     public void pasarDia(int id){
         if (this.deadLine > 0 && id == 20){
             this.deadLine -= 1;
