@@ -40,18 +40,30 @@ public class Main {
                 System.out.println(empresa.listaTrabajadores[i].rol);             
             }
             
-            System.out.println(empresa.listaTrabajadores[0].activo);
-            empresa.inhabilitar(0);
-            System.out.println(empresa.listaTrabajadores[0].activo);
-            
+//            System.out.println(empresa.listaTrabajadores[0].activo);
+//            empresa.inhabilitar(0);
+//            System.out.println(empresa.listaTrabajadores[0].activo);
+//            System.out.println(empresa.listaTrabajadores[0].rol);
+
+            while(true){
+            empresa.listaTrabajadores[0].start();
+            empresa2.listaTrabajadores[4].start();
+            }
+            //Funcion del Ensamblador//
+                //almacen.almacen[0] -= 1; 
            
+            //Funcion del Trabajador//
+                //trabajador.chambear
+                //almacen.almacen[0] += 1;
+            
 //            for (int i = 0; i < prueba.listaTrabajadores.length; i++) {
 //                System.out.println(prueba.listaTrabajadores[i].rol);
 //            }
 //             for (int i = 0; i < prueba.listaTrabajadores.length; i++) {
 //                System.out.println(prueba.listaTrabajadores[i].activo);
 //            }
-            System.out.println(prueba.cantidadTrabajadoresActivos);
+            //System.out.println(prueba.cantidadTrabajadoresActivos);
+            
             
             
 

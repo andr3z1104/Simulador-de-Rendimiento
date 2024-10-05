@@ -1,5 +1,6 @@
 
 package clases;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -92,8 +93,9 @@ public class Empresa {
     //ve el ejemplo que te deje en el main para que veas como funciona
     //no se de donde podriamos meter estos valores
     public void crearTrabajadores(int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador){
+        Semaphore semaforo = new Semaphore(1);
         for (int i = 0; i < 22; i++) {
-            Trabajador trabajador = new Trabajador(i);
+            Trabajador trabajador = new Trabajador(i,semaforo);
             listaTrabajadores[i] = trabajador;
             
             //project manager
@@ -176,7 +178,7 @@ public class Empresa {
         if (this.deadLine > 0 && id == 20){
             this.deadLine -= 1;
             if (this.deadLine == 0){
-                //funcion para que el director envia las computadoras, le toma 24 horas en las que no podra ver si el otaco ve anime o no, y luego de ese tiempo reinicia el contador: this.deadLine = this.staticDeadline.
+                //funcion para que el director envia las computadoras, le toma 24 horas en las que no podra ver si el Nicola ve anime o no, y luego de ese tiempo reinicia el contador: this.deadLine = this.staticDeadline.
             }
         }
         else{

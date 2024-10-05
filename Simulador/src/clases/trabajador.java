@@ -1,5 +1,6 @@
 
 package clases;
+import java.util.concurrent.Semaphore;
 
 
 public class Trabajador extends Thread {
@@ -18,13 +19,14 @@ public class Trabajador extends Thread {
     public int horasActivas;
     public int chequeoDelPM;
     public int descontado;
+    private final Semaphore Semaforo;
     
     // Constructor
-    public Trabajador(int id) {
+    public Trabajador(int id, Semaphore semaforo) {
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
-        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
+        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director", "Inutil"};
         this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
         this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
         this.horasOcio = 0;
@@ -32,6 +34,7 @@ public class Trabajador extends Thread {
         this.horasActivas = 0;
         this.chequeoDelPM = 0;
         this.descontado = 0;
+        this.Semaforo= semaforo;
     }
 
     
@@ -46,8 +49,12 @@ public class Trabajador extends Thread {
         return rol;
     }
     
+    //Desactiva el salario por hora, el rol, dias para generar producto
     public void desactivar(){
         this.activo = 0;
+        this.salarioPorHora = 0;
+        this.diasParaGenerarProducto = 0;
+        this.rol = roles[8];
     }
     
     public void esperar(){
@@ -99,23 +106,26 @@ public class Trabajador extends Thread {
         return activo;
     }
     
+    
+    
     //Metodo para simular que esta trabajando
     @Override
     public void run(){
-            
-        for (int i = 0; i < 5; i++) {
-              System.out.println("Verificacion del siguiente ID:" +i);
+
+           System.out.println("Chambeando" );
             try{
-                Thread.sleep(500);
+                Thread.sleep((long) getDiasParaGenerarProducto());
+                Semaforo.acquire();
+                
+                System.out.println("Guardado en Almacen "+getRol());
+                Semaforo.release();
+                
             }catch (InterruptedException e ){
                 e.printStackTrace();
             }
             
-             System.out.println("Verificacion terminada");
+             System.out.println("Chamba terminada");
         }
-       
-        }
-          
 
-    
+  
 }
