@@ -12,26 +12,27 @@ public class Empresa {
     public Trabajador[] listaTrabajadores;
     public int gananciasBrutas;
     public int costoOperaciones;
-    public int Utilidad;
+    public int utilidad;
     public int computadorasProducidas;
     public int computadorasTarjetaGrafica;
     public int deadLine;
     public int staticDeadline;
     public int segundosXdia;
+    public Almacen almacen;
     
 
-    public Empresa(String nombre, int deadLine, int segundosXdia) {
+    public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen) {
         this.nombre = nombre;
         this.gananciasBrutas = 0;
         this.costoOperaciones = 0;
-        this.Utilidad = 0;
+        this.utilidad = 0;
         this.computadorasProducidas = 0;
         this.computadorasTarjetaGrafica = 0;
         this.deadLine = deadLine;
         this.staticDeadline = deadLine;
         this.listaTrabajadores = new Trabajador[22];
         this.segundosXdia = segundosXdia;
-
+        this.almacen = almacen;
     }
 
     public String getNombre() {
@@ -59,11 +60,11 @@ public class Empresa {
     }
 
     public int getUtilidad() {
-        return Utilidad;
+        return utilidad;
     }
 
     public void setUtilidad(int gananciasBrutas, int costoOperaciones) {
-        this.Utilidad = gananciasBrutas - costoOperaciones;
+        this.utilidad = gananciasBrutas - costoOperaciones;
     }
 
     public int getComputadorasProducidas() {
@@ -92,71 +93,65 @@ public class Empresa {
     
     //ve el ejemplo que te deje en el main para que veas como funciona
     //no se de donde podriamos meter estos valores
-    public void crearTrabajadores(int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador){
-        Semaphore semaforo = new Semaphore(1);
+    public void crearTrabajadores(int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador) {
         for (int i = 0; i < 22; i++) {
-            Trabajador trabajador = new Trabajador(i,semaforo);
+            Trabajador trabajador = new Trabajador(i, almacen);
             listaTrabajadores[i] = trabajador;
             
-            //project manager
-            if (i == 20){
+            if (i == 20) { // Project Manager
                 listaTrabajadores[i].setRol(6, this.segundosXdia);
-            }
-            //director
-            if (i == 21){
+            } else if (i == 21) { // Director
                 listaTrabajadores[i].setRol(7, this.segundosXdia);
             }
-            
         }
         
         int contador = 0;
         int[] componentes = {placa, cpu, ram, fuente, tarjeta, ensamblador};
-
+        
         for (int rol = 0; rol < componentes.length; rol++) {
             for (int i = 0; i < componentes[rol]; i++) {
                 listaTrabajadores[contador].setRol(rol, segundosXdia);
+                listaTrabajadores[contador].start(); // Inicia el hilo de producción
                 contador++;
             }
         }
-
     }
     
     //considero esta funcion conveniente si se buscan los trabajadores inactivos. 1 = activo, 0 = inactivo
-    public int[] trabajadoresInactivos(){
-        int[] activos = new int[22];
+    public int[] trabajadoresInactivos() {
+        int[] activos = new int[listaTrabajadores.length];
         for (int i = 0; i < listaTrabajadores.length; i++) {
-            activos[i] = listaTrabajadores[i].activo;
+            activos[i] = listaTrabajadores[i].isActivo();
         }
         return activos;
     }
     
     //cantidad: cantidad de trabajadores a asignar. area: rol  a asignar
     public void asignarArea(int cantidad, int area) {
-        try{
-            int[] inactivos = trabajadoresInactivos();
-            int contador = 0;
+        int[] inactivos = trabajadoresInactivos();
+        int contador = 0;
 
-            for (int inactivo : inactivos) {
-                if (inactivo == 0) {
-                    contador++;
-                }
-            }
-
-            if (contador < cantidad) {
-                throw new IllegalArgumentException("Error, cantidad de trabajadores excedida.");
-            }
-
-            for (int i = 0; i < inactivos.length && cantidad > 0; i++) {
-                if (inactivos[i] == 0) {
-                    listaTrabajadores[i].setRol(area, segundosXdia);
-                    cantidad--;
-                }
+        // Contamos cuántos trabajadores inactivos hay
+        for (int inactivo : inactivos) {
+            if (inactivo == 0) {
+                contador++;
             }
         }
-        catch (IllegalArgumentException e){
-            System.out.println("Error, cantidad de trabajadores excedida.");
+
+        // Verificamos si hay suficientes inactivos para la cantidad solicitada
+        if (contador < cantidad) {
+            throw new IllegalArgumentException("Error, cantidad de trabajadores inactivos insuficiente.");
         }
-}
+
+        // Asigna el rol a los trabajadores inactivos y los reactiva
+        for (int i = 0; i < inactivos.length && cantidad > 0; i++) {
+            if (inactivos[i] == 0) {
+                listaTrabajadores[i].setRol(area, segundosXdia);
+                listaTrabajadores[i].start();      // Inicia o reinicia el hilo del trabajador
+                cantidad--;
+            }
+        }
+    }
 
     
     //POR PROBAR pasa del estado activo o espera a inactivo

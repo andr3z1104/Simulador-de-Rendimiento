@@ -13,16 +13,16 @@ public class Trabajador extends Thread {
     public final String[] roles;
     public final int[] salarios;
     public final double[] dias;
-    //nuevos de 3/10/2024, de project manager y director
     public int horasOcio;
     public int intervaloOcio;
     public int horasActivas;
     public int chequeoDelPM;
     public int descontado;
-    private final Semaphore Semaforo;
+    public final Almacen almacen;
+    public int rolIndex;
     
     // Constructor
-    public Trabajador(int id, Semaphore semaforo) {
+    public Trabajador(int id, Almacen almacen) {
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
@@ -34,7 +34,8 @@ public class Trabajador extends Thread {
         this.horasActivas = 0;
         this.chequeoDelPM = 0;
         this.descontado = 0;
-        this.Semaforo= semaforo;
+        this.almacen = almacen;
+        this.rolIndex = -1;
     }
 
     
@@ -67,6 +68,8 @@ public class Trabajador extends Thread {
         this.salarioPorHora = salarios[index];
         this.diasParaGenerarProducto = dias[index] * segundosXdia;
         this.activo = 1;
+        this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
+
         if (index == 6){
             //equivalente a 16 horas
             this.horasOcio = segundosXdia * 2 / 3;
@@ -108,24 +111,23 @@ public class Trabajador extends Thread {
     
     
     
-    //Metodo para simular que esta trabajando
+    // Simula el trabajo del trabajador
     @Override
-    public void run(){
+    public void run() {
+        while (true) {
+            if (activo == 1 && rolIndex >= 0 && rolIndex <= 4) {  // Asegura que solo los roles de componentes trabajen
+                try {
+                    // Simula el tiempo de producción
+                    Thread.sleep((long) diasParaGenerarProducto * 1000);
+                    System.out.println("Trabajador " + ide + " ha producido un componente de tipo " + rol);
 
-           System.out.println("Chambeando" );
-            try{
-                Thread.sleep((long) getDiasParaGenerarProducto());
-                Semaforo.acquire();
-                
-                System.out.println("Guardado en Almacen "+getRol());
-                Semaforo.release();
-                
-            }catch (InterruptedException e ){
-                e.printStackTrace();
+                    // Agrega el producto al almacén
+                    almacen.agregarComponente(rolIndex);
+                    
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            
-             System.out.println("Chamba terminada");
         }
-
-  
+    }
 }
