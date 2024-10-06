@@ -1,4 +1,3 @@
-
 package clases;
 import java.util.concurrent.Semaphore;
 
@@ -19,7 +18,11 @@ public class Empresa {
     public int staticDeadline;
     public int segundosXdia;
     public Almacen almacen;
-    
+    public int[] pcNormal;
+    public int[] pcTGrafica;
+    public int intervaloGenerarPcConTGrafica;
+    public int costoPcNormal;
+    public int costoPcTGrafica;
 
     public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen) {
         this.nombre = nombre;
@@ -33,6 +36,19 @@ public class Empresa {
         this.listaTrabajadores = new Trabajador[22];
         this.segundosXdia = segundosXdia;
         this.almacen = almacen;
+        if ("Apple".equals(this.nombre)) {
+            this.pcNormal = new int[] {2,1,4,4,0};
+            this.pcTGrafica = new int[] {2,1,4,4,2};
+            this.intervaloGenerarPcConTGrafica = 5;
+            this.costoPcNormal = 100000;
+            this.costoPcTGrafica = 150000;
+        } else {
+            this.pcNormal = new int[] {1,1,2,4,0};
+            this.pcTGrafica = new int[] {1,1,2,4,3};
+            this.intervaloGenerarPcConTGrafica = 2;
+            this.costoPcNormal = 90000;
+            this.costoPcTGrafica = 140000;
+        }
     }
 
     public String getNombre() {
@@ -93,27 +109,13 @@ public class Empresa {
     
     //ve el ejemplo que te deje en el main para que veas como funciona
     //no se de donde podriamos meter estos valores
-    public void crearTrabajadores(int placa, int cpu, int ram, int fuente, int tarjeta, int ensamblador) {
-        for (int i = 0; i < 22; i++) {
-            Trabajador trabajador = new Trabajador(i, almacen);
+    public void crearTrabajadores() {
+        // Crea un trabajador de cada tipo, incluyendo el ensamblador
+        for (int i = 0; i < listaTrabajadores.length; i++) {
+            Trabajador trabajador = new Trabajador(i, almacen, pcNormal, pcTGrafica);
+            trabajador.setRol(i, 5);  // Dura 5 segundos por producción
             listaTrabajadores[i] = trabajador;
-            
-            if (i == 20) { // Project Manager
-                listaTrabajadores[i].setRol(6, this.segundosXdia);
-            } else if (i == 21) { // Director
-                listaTrabajadores[i].setRol(7, this.segundosXdia);
-            }
-        }
-        
-        int contador = 0;
-        int[] componentes = {placa, cpu, ram, fuente, tarjeta, ensamblador};
-        
-        for (int rol = 0; rol < componentes.length; rol++) {
-            for (int i = 0; i < componentes[rol]; i++) {
-                listaTrabajadores[contador].setRol(rol, segundosXdia);
-                listaTrabajadores[contador].start(); // Inicia el hilo de producción
-                contador++;
-            }
+            trabajador.start(); // Inicia el trabajador
         }
     }
     
@@ -127,29 +129,34 @@ public class Empresa {
     }
     
     //cantidad: cantidad de trabajadores a asignar. area: rol  a asignar
-    public void asignarArea(int cantidad, int area) {
-        int[] inactivos = trabajadoresInactivos();
-        int contador = 0;
+    public void asignarArea(int area) {
+        try{
+            int[] inactivos = trabajadoresInactivos();
+            int contador = 0;
 
-        // Contamos cuántos trabajadores inactivos hay
-        for (int inactivo : inactivos) {
-            if (inactivo == 0) {
-                contador++;
+            // Contamos cuántos trabajadores inactivos hay
+            for (int inactivo : inactivos) {
+                if (inactivo == 0) {
+                    contador++;
+                }
+            }
+
+            // Verificamos si hay suficientes inactivos para la cantidad solicitada
+            if (contador == 0) {
+                throw new IllegalArgumentException("Error, no hay trabajadores inactivos.");
+            }
+
+            // Asigna el rol a los trabajadores inactivos y los reactiva
+            for (int i = 0; i < inactivos.length; i++) {
+                if (inactivos[i] == 0) {
+                    listaTrabajadores[i].setRol(area, segundosXdia);
+                    listaTrabajadores[i].start();      // Inicia o reinicia el hilo del trabajador
+                    break;
+                }
             }
         }
-
-        // Verificamos si hay suficientes inactivos para la cantidad solicitada
-        if (contador < cantidad) {
-            throw new IllegalArgumentException("Error, cantidad de trabajadores inactivos insuficiente.");
-        }
-
-        // Asigna el rol a los trabajadores inactivos y los reactiva
-        for (int i = 0; i < inactivos.length && cantidad > 0; i++) {
-            if (inactivos[i] == 0) {
-                listaTrabajadores[i].setRol(area, segundosXdia);
-                listaTrabajadores[i].start();      // Inicia o reinicia el hilo del trabajador
-                cantidad--;
-            }
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
     }
 
@@ -180,5 +187,4 @@ public class Empresa {
             throw new IllegalArgumentException("Error, el trabajador ingresado no puede realizar esta funcion.");
         }
     }
-    
 }

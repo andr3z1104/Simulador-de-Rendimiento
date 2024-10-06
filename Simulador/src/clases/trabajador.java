@@ -20,13 +20,15 @@ public class Trabajador extends Thread {
     public int descontado;
     public final Almacen almacen;
     public int rolIndex;
+    public int[] pcNormal;
+    public int[] pcTGrafica;
     
     // Constructor
-    public Trabajador(int id, Almacen almacen) {
+    public Trabajador(int id, Almacen almacen, int[] pcNormal, int[] pcTGrafica) {
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
-        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director", "Inutil"};
+        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
         this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
         this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
         this.horasOcio = 0;
@@ -51,11 +53,13 @@ public class Trabajador extends Thread {
     }
     
     //Desactiva el salario por hora, el rol, dias para generar producto
-    public void desactivar(){
+    // Método para desactivar al trabajador
+    public void desactivar() {
         this.activo = 0;
+        this.rol = "inutil"; // "inutil"
         this.salarioPorHora = 0;
         this.diasParaGenerarProducto = 0;
-        this.rol = roles[8];
+        System.out.println("Trabajador " + ide + " ha sido desactivado.");
     }
     
     public void esperar(){
@@ -69,7 +73,9 @@ public class Trabajador extends Thread {
         this.diasParaGenerarProducto = dias[index] * segundosXdia;
         this.activo = 1;
         this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
-
+        this.pcNormal = pcNormal; // componentes necesarios para hacer una pc normal
+        this.pcTGrafica = pcTGrafica; // componentes necesarios para hacer una pc con tarjeta grafica
+        
         if (index == 6){
             //equivalente a 16 horas
             this.horasOcio = segundosXdia * 2 / 3;
@@ -114,20 +120,44 @@ public class Trabajador extends Thread {
     // Simula el trabajo del trabajador
     @Override
     public void run() {
-        while (true) {
-            if (activo == 1 && rolIndex >= 0 && rolIndex <= 4) {  // Asegura que solo los roles de componentes trabajen
-                try {
-                    // Simula el tiempo de producción
+        while (activo == 1) {  // El hilo se ejecuta mientras 'activo' es 1
+            try {
+                if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
+                    // Simula el tiempo necesario para generar un componente
                     Thread.sleep((long) diasParaGenerarProducto * 1000);
                     System.out.println("Trabajador " + ide + " ha producido un componente de tipo " + rol);
 
-                    // Agrega el producto al almacén
+                    // Agregar el componente producido al almacén
                     almacen.agregarComponente(rolIndex);
-                    
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } else if (rolIndex == 5) { // Ensamblador
+                    // Verifica si hay suficientes componentes disponibles para ensamblar una computadora
+                    if (almacen.verificarDisponibilidad(pcNormal)) {
+                        // Simula el tiempo necesario para ensamblar una computadora
+                        Thread.sleep((long) diasParaGenerarProducto * 1000);
+
+                        // Quitar los componentes necesarios para ensamblar la computadora
+                        almacen.quitarComponente(pcNormal);
+                        System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
+
+                        // Notificar a la empresa que se ha ensamblado una computadora
+                        // Esto puede ser un método de la clase Empresa que actualice el conteo de computadoras producidas
+                        // empresa.registrarComputadoraEnsamblada();
+
+                    } else {
+                        // Si no hay suficientes componentes, espera un tiempo antes de volver a intentarlo
+                        System.out.println("No hay suficientes componentes para ensamblar. Trabajador " + ide + " esperando...");
+                        Thread.sleep(1000); // Espera antes de volver a verificar
+                    }
                 }
+            } catch (InterruptedException e) {
+                System.out.println("Error: " + e.getMessage());
+                Thread.currentThread().interrupt(); // Se asegura de que el hilo pueda ser interrumpido correctamente
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error en la operación: " + e.getMessage());
             }
         }
+        // Cuando activo es 0, el ciclo se rompe y el trabajador deja de trabajar.
+        System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
     }
+
 }
