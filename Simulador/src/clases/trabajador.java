@@ -1,5 +1,6 @@
 
 package clases;
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
 
@@ -22,9 +23,12 @@ public class Trabajador extends Thread {
     public int rolIndex;
     public int[] pcNormal;
     public int[] pcTGrafica;
+    public String nombre;
+    public int intervaloTGrafica;
+    private int contadorComputadoras = 0;
     
     // Constructor
-    public Trabajador(int id, Almacen almacen, int[] pcNormal, int[] pcTGrafica) {
+    public Trabajador(int id, Almacen almacen, String nombre) {
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
@@ -38,6 +42,18 @@ public class Trabajador extends Thread {
         this.descontado = 0;
         this.almacen = almacen;
         this.rolIndex = -1;
+        this.pcNormal = pcNormal;
+        this.pcTGrafica = pcTGrafica;
+        this.nombre = nombre;
+        if ("Apple".equals(this.nombre)) {
+            this.pcNormal = new int[] {2,1,4,4,0};
+            this.pcTGrafica = new int[] {2,1,4,4,2};
+            this.intervaloTGrafica = 5;
+        } else {
+            this.pcNormal = new int[] {1,1,2,4,0};
+            this.pcTGrafica = new int[] {1,1,2,4,3};
+            this.intervaloTGrafica = 2;
+        }
     }
 
     
@@ -118,46 +134,67 @@ public class Trabajador extends Thread {
     
     
     // Simula el trabajo del trabajador
+
     @Override
     public void run() {
-        while (activo == 1) {  // El hilo se ejecuta mientras 'activo' es 1
+        while (true) {
             try {
-                if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
-                    // Simula el tiempo necesario para generar un componente
-                    Thread.sleep((long) diasParaGenerarProducto * 1000);
-                    System.out.println("Trabajador " + ide + " ha producido un componente de tipo " + rol);
-
-                    // Agregar el componente producido al almacén
-                    almacen.agregarComponente(rolIndex);
-                } else if (rolIndex == 5) { // Ensamblador
-                    // Verifica si hay suficientes componentes disponibles para ensamblar una computadora
-                    if (almacen.verificarDisponibilidad(pcNormal)) {
-                        // Simula el tiempo necesario para ensamblar una computadora
+                if (activo == 1) {
+                    if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
                         Thread.sleep((long) diasParaGenerarProducto * 1000);
+                        System.out.println(Arrays.toString(this.almacen.almacen));
 
-                        // Quitar los componentes necesarios para ensamblar la computadora
-                        almacen.quitarComponente(pcNormal);
-                        System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
+                        synchronized (almacen) {
+                            if (almacen.almacen[this.rolIndex] < almacen.capacidadMax[this.rolIndex]) {
+                                almacen.agregarComponente(rolIndex);
+                            } else {
+                                System.out.println("Inventario lleno. Trabajador " + ide + " esperando...");
+                                this.activo = 2; // Cambiar a estado de espera
+                            }
+                        }
+                    } else if (rolIndex == 5) { // Ensamblador
+                        int[] computadoras;
+                        boolean esConTarjetaGrafica = almacen.necesitaTarjetaGrafica();
 
-                        // Notificar a la empresa que se ha ensamblado una computadora
-                        // Esto puede ser un método de la clase Empresa que actualice el conteo de computadoras producidas
-                        // empresa.registrarComputadoraEnsamblada();
+                        if (esConTarjetaGrafica) {
+                            computadoras = this.pcTGrafica;
+                            System.out.println("Ensamblando computadora con tarjeta gráfica obligatoriamente.");
+                        } else {
+                            computadoras = this.pcNormal;
+                        }
 
-                    } else {
-                        // Si no hay suficientes componentes, espera un tiempo antes de volver a intentarlo
-                        System.out.println("No hay suficientes componentes para ensamblar. Trabajador " + ide + " esperando...");
-                        Thread.sleep(1000); // Espera antes de volver a verificar
+                        synchronized (almacen) {
+                            if (almacen.verificarDisponibilidad(computadoras)) {
+                                Thread.sleep((long) diasParaGenerarProducto * 1000);
+                                this.almacen.quitarComponente(computadoras);
+
+                                if (esConTarjetaGrafica) {
+                                    almacen.agregarComponente(this.rolIndex + 1); // Agregar computadora con tarjeta gráfica
+                                } else {
+                                    almacen.agregarComponente(this.rolIndex); // Agregar computadora normal
+                                }
+                                System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
+
+                                almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
+                            } else {
+                                Thread.sleep(50);
+                            }
+                        }
                     }
+                } else if (activo == 2) {
+                    synchronized (almacen) {
+                        if (almacen.almacen[rolIndex] < almacen.capacidadMax[rolIndex]) {
+                            activo = 1; // Reactivarse cuando haya espacio
+                        }
+                    }
+                    Thread.sleep(100);
                 }
             } catch (InterruptedException e) {
                 System.out.println("Error: " + e.getMessage());
-                Thread.currentThread().interrupt(); // Se asegura de que el hilo pueda ser interrumpido correctamente
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error en la operación: " + e.getMessage());
+                Thread.currentThread().interrupt();
+                break;
             }
         }
-        // Cuando activo es 0, el ciclo se rompe y el trabajador deja de trabajar.
         System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
     }
-
 }

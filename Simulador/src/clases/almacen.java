@@ -3,32 +3,41 @@ package clases;
 import java.util.concurrent.Semaphore;
 
 public class Almacen {
-    private final int[] almacen;
-    private final int[] capacidadMax;
+    public int[] almacen;
+    public final int[] capacidadMax;
     private final Semaphore[] semaforos;
-    private final Semaphore producir; // Controla producción
-    private final Semaphore consumir; // Controla consumo
+    private int contadorComputadorasEnsambladas = 0; // Contador global para computadoras ensambladas
 
     public Almacen(int[] capacidadMax) {
-        this.almacen = new int[] {0, 0, 0, 0, 0, 0};  // Almacén con seis tipos de componentes
+        this.almacen = new int[] {0, 0, 0, 0, 0, 0, 0};  // Almacén con seis tipos de componentes
         this.capacidadMax = capacidadMax;
         this.semaforos = new Semaphore[capacidadMax.length];
-        this.producir = new Semaphore(capacidadMax[0]); // Controla la capacidad máxima
-        this.consumir = new Semaphore(0); // Controla el consumo, empezando en 0
-
+        
         for (int i = 0; i < semaforos.length; i++) {
             this.semaforos[i] = new Semaphore(1); // Un semáforo para cada tipo de componente
         }
     }
-
+    
+    public synchronized boolean necesitaTarjetaGrafica() {
+        return contadorComputadorasEnsambladas >= 5;
+    }
+    
+    public synchronized void incrementarContadorComputadoras(boolean esConTarjetaGrafica) {
+        if (!esConTarjetaGrafica) {
+            contadorComputadorasEnsambladas++;
+        } else {
+            contadorComputadorasEnsambladas = 0;
+        }
+    }
+    
     public void agregarComponente(int tipo) throws InterruptedException {
-        producir.acquire(); // Verifica que haya espacio
-        semaforos[tipo].acquire(); // Control de acceso al componente específico
+        semaforos[tipo].acquire();
         try {
             if (almacen[tipo] < capacidadMax[tipo]) {
                 almacen[tipo]++;
                 System.out.println("Componente de tipo " + tipo + " agregado. Total en almacén: " + almacen[tipo]);
-                consumir.release(); // Permite que el ensamblador pueda consumir si es necesario
+            } else {
+                System.out.println("No se puede agregar. El almacén de tipo " + tipo + " está lleno.");
             }
         } finally {
             semaforos[tipo].release();
@@ -36,31 +45,27 @@ public class Almacen {
     }
 
     public void quitarComponente(int[] cantidad) throws InterruptedException {
-        for (int i = 0; i < cantidad.length; i++) {
-            consumir.acquire(cantidad[i]); // Espera a que haya suficientes componentes
-            semaforos[i].acquire(); // Control de acceso al componente específico
-        }
-        
         try {
             for (int i = 0; i < cantidad.length; i++) {
+                semaforos[i].acquire();
                 if (almacen[i] >= cantidad[i]) {
                     almacen[i] -= cantidad[i];
                     System.out.println("Componentes de tipo " + i + " retirados. Total en almacén: " + almacen[i]);
-                    producir.release(cantidad[i]); // Permite que el productor continúe produciendo
+                } else {
+                    System.out.println("No hay suficientes componentes de tipo " + i + " para retirar.");
                 }
-            }
-        } finally {
-            for (int i = 0; i < cantidad.length; i++) {
                 semaforos[i].release();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
         }
     }
 
-
     // Método para verificar si hay suficientes componentes para ensamblar
-    public boolean verificarDisponibilidad(int[] requerimientos) {
-        for (int i = 0; i < requerimientos.length; i++) {
-            if (almacen[i] < requerimientos[i]) {
+    public synchronized boolean verificarDisponibilidad(int[] requisitos) {
+        for (int i = 0; i < requisitos.length; i++) {
+            if (almacen[i] < requisitos[i]) {
                 return false;
             }
         }
@@ -70,4 +75,5 @@ public class Almacen {
     public int getCantidadComponente(int tipo) {
         return almacen[tipo];
     }
+
 }

@@ -49,7 +49,8 @@ public class Controlador {
         Empresa empresa = new Empresa(nombre, this.deadline, this.segundosXdia, almacen);
         
         // Crear los trabajadores con el número de roles especificados
-        empresa.crearTrabajadores();
+        int[] listaRoles = new int[] {this.placaBase, this.cpu, this.ram, this.fuenteAlimentacion, this.tarjetaGrafica, this.ensamblador};
+        empresa.crearTrabajadores(listaRoles);
         
         // Asignar la cantidad de trabajadores activos inicialmente
         this.cantidadTrabajadoresActivos = placaBase + cpu + ram + fuenteAlimentacion + tarjetaGrafica + ensamblador;

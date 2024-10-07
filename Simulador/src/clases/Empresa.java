@@ -6,7 +6,7 @@ import java.util.concurrent.Semaphore;
  *
  * @author user
  */
-public class Empresa {
+public class Empresa extends Thread {
     public String nombre;
     public Trabajador[] listaTrabajadores;
     public int gananciasBrutas;
@@ -23,6 +23,7 @@ public class Empresa {
     public int intervaloGenerarPcConTGrafica;
     public int costoPcNormal;
     public int costoPcTGrafica;
+    public int contador;
 
     public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen) {
         this.nombre = nombre;
@@ -48,6 +49,29 @@ public class Empresa {
             this.intervaloGenerarPcConTGrafica = 2;
             this.costoPcNormal = 90000;
             this.costoPcTGrafica = 140000;
+        }
+    }
+    
+    public synchronized void verificarAumento() {
+        while (true) {
+            try {
+                Thread.sleep((long) segundosXdia / 87);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (this.almacen.almacen[5] != this.contador) {
+                this.contador = this.almacen.almacen[5];
+                for (int i = 0; i < this.listaTrabajadores.length; i++) {
+                    // Si hay espacio disponible y el trabajador está en espera (activo == 2)
+                    if (this.almacen.almacen[this.listaTrabajadores[i].rolIndex] < this.almacen.capacidadMax[this.listaTrabajadores[i].rolIndex]) {
+                        if (this.listaTrabajadores[i].activo == 2) {
+                            this.almacen.almacen[this.listaTrabajadores[i].rolIndex] ++; // pendiente
+                            this.listaTrabajadores[i].activo = 1; // Reactivar el trabajador
+                            this.listaTrabajadores[i].run(); // Reanudar el trabajo
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -109,13 +133,31 @@ public class Empresa {
     
     //ve el ejemplo que te deje en el main para que veas como funciona
     //no se de donde podriamos meter estos valores
-    public void crearTrabajadores() {
+    public void crearTrabajadores(int[] tipos) {
         // Crea un trabajador de cada tipo, incluyendo el ensamblador
-        for (int i = 0; i < listaTrabajadores.length; i++) {
-            Trabajador trabajador = new Trabajador(i, almacen, pcNormal, pcTGrafica);
-            trabajador.setRol(i, 5);  // Dura 5 segundos por producción
+        for (int i = 0; i < 22; i++) {
+            Trabajador trabajador = new Trabajador(i, almacen, this.nombre);
             listaTrabajadores[i] = trabajador;
-            trabajador.start(); // Inicia el trabajador
+            
+            //project manager
+            if (i == 20){
+                listaTrabajadores[i].setRol(6, this.segundosXdia);
+            }
+            //director
+            if (i == 21){
+                listaTrabajadores[i].setRol(7, this.segundosXdia);
+            }
+            
+        }
+        
+        int contador = 0;
+
+        for (int rol = 0; rol < tipos.length; rol++) {
+            for (int i = 0; i < tipos[rol]; i++) {
+                listaTrabajadores[contador].setRol(rol, segundosXdia);
+                listaTrabajadores[contador].start();
+                contador++;
+            }
         }
     }
     
