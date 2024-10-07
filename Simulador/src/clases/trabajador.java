@@ -1,7 +1,6 @@
 
 package clases;
-import java.util.concurrent.Semaphore;
-
+import java.util.Arrays;
 
 public class Trabajador extends Thread {
     public final int ide;
@@ -13,20 +12,24 @@ public class Trabajador extends Thread {
     public final String[] roles;
     public final int[] salarios;
     public final double[] dias;
-    //nuevos de 3/10/2024, de project manager y director
     public int horasOcio;
     public int intervaloOcio;
     public int horasActivas;
     public int chequeoDelPM;
     public int descontado;
-    private final Semaphore Semaforo;
+    public final Almacen almacen;
+    public int rolIndex;
+    public int[] pcNormal;
+    public int[] pcTGrafica;
+    public String nombre;
+    public int intervaloTGrafica;
     
     // Constructor
-    public Trabajador(int id, Semaphore semaforo) {
+    public Trabajador(int id, Almacen almacen, String nombre) {
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
-        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director", "Inutil"};
+        this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
         this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
         this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
         this.horasOcio = 0;
@@ -34,7 +37,18 @@ public class Trabajador extends Thread {
         this.horasActivas = 0;
         this.chequeoDelPM = 0;
         this.descontado = 0;
-        this.Semaforo= semaforo;
+        this.almacen = almacen;
+        this.rolIndex = -1;
+        this.nombre = nombre;
+        if ("Apple".equals(this.nombre)) {
+            this.pcNormal = new int[] {2,1,4,4,0};
+            this.pcTGrafica = new int[] {2,1,4,4,2};
+            this.intervaloTGrafica = 5;
+        } else {
+            this.pcNormal = new int[] {1,1,2,4,0};
+            this.pcTGrafica = new int[] {1,1,2,4,3};
+            this.intervaloTGrafica = 2;
+        }
     }
 
     
@@ -50,11 +64,13 @@ public class Trabajador extends Thread {
     }
     
     //Desactiva el salario por hora, el rol, dias para generar producto
-    public void desactivar(){
+    // Método para desactivar al trabajador
+    public void desactivar() {
         this.activo = 0;
+        this.rol = "inutil"; // "inutil"
         this.salarioPorHora = 0;
         this.diasParaGenerarProducto = 0;
-        this.rol = roles[8];
+        System.out.println("Trabajador " + ide + " ha sido desactivado.");
     }
     
     public void esperar(){
@@ -67,6 +83,8 @@ public class Trabajador extends Thread {
         this.salarioPorHora = salarios[index];
         this.diasParaGenerarProducto = dias[index] * segundosXdia;
         this.activo = 1;
+        this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
+        
         if (index == 6){
             //equivalente a 16 horas
             this.horasOcio = segundosXdia * 2 / 3;
@@ -108,24 +126,68 @@ public class Trabajador extends Thread {
     
     
     
-    //Metodo para simular que esta trabajando
+    // Simula el trabajo del trabajador
+
     @Override
-    public void run(){
+    public void run() {
+        while (true) {
+            try {
+                if (activo == 1) {
+                    if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
+                        Thread.sleep((long) diasParaGenerarProducto * 1000);
+                        System.out.println(Arrays.toString(this.almacen.almacen));
 
-           System.out.println("Chambeando" );
-            try{
-                Thread.sleep((long) getDiasParaGenerarProducto());
-                Semaforo.acquire();
-                
-                System.out.println("Guardado en Almacen "+getRol());
-                Semaforo.release();
-                
-            }catch (InterruptedException e ){
-                e.printStackTrace();
+                        synchronized (almacen) {
+                            if (almacen.almacen[this.rolIndex] < almacen.capacidadMax[this.rolIndex]) {
+                                almacen.agregarComponente(rolIndex);
+                            } else {
+                                System.out.println("Inventario lleno. Trabajador " + ide + " esperando...");
+                                this.activo = 2; // Cambiar a estado de espera
+                            }
+                        }
+                    } else if (rolIndex == 5) { // Ensamblador
+                        int[] computadoras;
+                        boolean esConTarjetaGrafica = almacen.necesitaTarjetaGrafica();
+
+                        if (esConTarjetaGrafica) {
+                            computadoras = this.pcTGrafica;
+                            System.out.println("Ensamblando computadora con tarjeta gráfica obligatoriamente.");
+                        } else {
+                            computadoras = this.pcNormal;
+                        }
+
+                        synchronized (almacen) {
+                            if (almacen.verificarDisponibilidad(computadoras)) {
+                                Thread.sleep((long) diasParaGenerarProducto * 1000);
+                                this.almacen.quitarComponente(computadoras);
+
+                                if (esConTarjetaGrafica) {
+                                    almacen.agregarComponente(this.rolIndex + 1); // Agregar computadora con tarjeta gráfica
+                                } else {
+                                    almacen.agregarComponente(this.rolIndex); // Agregar computadora normal
+                                }
+                                System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
+
+                                almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
+                            } else {
+                                Thread.sleep(50);
+                            }
+                        }
+                    }
+                } else if (activo == 2) {
+                    synchronized (almacen) {
+                        if (almacen.almacen[rolIndex] < almacen.capacidadMax[rolIndex]) {
+                            activo = 1; // Reactivarse cuando haya espacio
+                        }
+                    }
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Error: " + e.getMessage());
+                Thread.currentThread().interrupt();
+                break;
             }
-            
-             System.out.println("Chamba terminada");
         }
-
-  
+        System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
+    }
 }
