@@ -1,8 +1,6 @@
 
 package clases;
 import java.util.Arrays;
-import java.util.concurrent.Semaphore;
-
 
 public class Trabajador extends Thread {
     public final int ide;
@@ -25,7 +23,6 @@ public class Trabajador extends Thread {
     public int[] pcTGrafica;
     public String nombre;
     public int intervaloTGrafica;
-    private int contadorComputadoras = 0;
     
     // Constructor
     public Trabajador(int id, Almacen almacen, String nombre) {
@@ -42,8 +39,6 @@ public class Trabajador extends Thread {
         this.descontado = 0;
         this.almacen = almacen;
         this.rolIndex = -1;
-        this.pcNormal = pcNormal;
-        this.pcTGrafica = pcTGrafica;
         this.nombre = nombre;
         if ("Apple".equals(this.nombre)) {
             this.pcNormal = new int[] {2,1,4,4,0};
@@ -89,8 +84,6 @@ public class Trabajador extends Thread {
         this.diasParaGenerarProducto = dias[index] * segundosXdia;
         this.activo = 1;
         this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
-        this.pcNormal = pcNormal; // componentes necesarios para hacer una pc normal
-        this.pcTGrafica = pcTGrafica; // componentes necesarios para hacer una pc con tarjeta grafica
         
         if (index == 6){
             //equivalente a 16 horas
