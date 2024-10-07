@@ -159,8 +159,9 @@ public class CargarArchivo extends javax.swing.JFrame {
         t.tarjetaGrafica, t.ensamblador, 
         t.cantidadTrabajadoresActivos
         );
-            
-           Empresa empresa = controlador.crearEmpresa("Apple", controlador.deadline, controlador.segundosXdia);
+            int[] maximo = {5, 5, 5, 5, 5, 5};  // Inicializar el array con los valores
+            Almacen almacen = new Almacen(maximo);  // Pasar el array al constructor
+           Empresa empresa = controlador.crearEmpresa("Apple", almacen);
            jButton3.setVisible(false);
                    jLabel6.setVisible(true);
 
@@ -197,7 +198,9 @@ public class CargarArchivo extends javax.swing.JFrame {
         t2.cantidadTrabajadoresActivos
         );
             
-           Empresa empresa2 = controlador2.crearEmpresa("Apple", controlador2.deadline, controlador2.segundosXdia);
+            int[] maximo2 = {5, 5, 5, 5, 5, 5};  // Inicializar el array con los valores
+            Almacen almacen2 = new Almacen(maximo2);  // Pasar el array al constructor
+           Empresa empresa2 = controlador2.crearEmpresa("Apple", almacen2);
            jButton1.setVisible(false);
            jLabel5.setVisible(true);
                    for (int i = 0; i < empresa2.listaTrabajadores.length; i++) {
