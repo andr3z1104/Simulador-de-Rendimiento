@@ -20,6 +20,11 @@ import java.io.File;
  * @author andre
  */
 public class CargarArchivo extends javax.swing.JFrame {
+    
+
+    private Txt t;
+    private Txt t2;
+ 
 
     /**
      * Creates new form CargarArchivo
@@ -152,22 +157,12 @@ public class CargarArchivo extends javax.swing.JFrame {
             String aeo = selectedFile.getAbsolutePath();
             t.cargarArchivo(aeo);
             t.leerArchivo();
+            
+            setT(t);
+            
+            jButton3.setVisible(false);
+            jLabel6.setVisible(true);
 
-         Controlador controlador = t.crearControlador(
-        t.segundosXdia, t.deadline, t.placaBase,
-        t.cpu, t.ram, t.fuenteAlimentacion,
-        t.tarjetaGrafica, t.ensamblador, 
-        t.cantidadTrabajadoresActivos
-        );
-            int[] maximo = {5, 5, 5, 5, 5, 5};  // Inicializar el array con los valores
-            Almacen almacen = new Almacen(maximo);  // Pasar el array al constructor
-           Empresa empresa = controlador.crearEmpresa("Apple", almacen);
-           jButton3.setVisible(false);
-                   jLabel6.setVisible(true);
-
-                   for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
-                System.out.println(empresa.listaTrabajadores[i].rol);             
-            }
             
         }
         
@@ -190,29 +185,31 @@ public class CargarArchivo extends javax.swing.JFrame {
             String aeo2 = selectedFile2.getAbsolutePath();
             t2.cargarArchivo(aeo2);
             t2.leerArchivo();
-
-         Controlador controlador2 = t2.crearControlador(
-        t2.segundosXdia, t2.deadline, t2.placaBase,
-        t2.cpu, t2.ram, t2.fuenteAlimentacion,
-        t2.tarjetaGrafica, t2.ensamblador, 
-        t2.cantidadTrabajadoresActivos
-        );
             
-            int[] maximo2 = {5, 5, 5, 5, 5, 5};  // Inicializar el array con los valores
-            Almacen almacen2 = new Almacen(maximo2);  // Pasar el array al constructor
-           Empresa empresa2 = controlador2.crearEmpresa("Apple", almacen2);
-           jButton1.setVisible(false);
+            setT2(t2);
+            
+            jButton1.setVisible(false);
            jLabel5.setVisible(true);
-                   for (int i = 0; i < empresa2.listaTrabajadores.length; i++) {
-                System.out.println(empresa2.listaTrabajadores[i].rol);             
-            }
+ 
             
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     //Boton para INICIAR la SIMULACION
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-            this.dispose();
+          
+        
+            SimuladorApple apple = new SimuladorApple();
+            apple.Arrancar(t);
+            apple.setVisible(true);
+
+            
+            
+            SimuladorHP hp = new SimuladorHP();
+            hp.Arrancar(t2);
+            hp.setVisible(true);
+
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -270,4 +267,30 @@ public class CargarArchivo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
+
+
+    public Txt getT() {
+        return t;
+    }
+
+    public void setT(Txt t) {
+        this.t = t;
+    }
+
+    public Txt getT2() {
+        return t2;
+    }
+
+    public void setT2(Txt t2) {
+        this.t2 = t2;
+    }
+    
+    
+    
+
+    
+    
+
+
+
 }

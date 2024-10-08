@@ -1,11 +1,16 @@
 package clases;
 
 
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+
+
 /**
  *
  * @author user
  */
-public class Empresa extends Thread {
+public class Empresa {
+    private JLabel[] labels;
     public String nombre;
     public Trabajador[] listaTrabajadores;
     public int gananciasBrutas;
@@ -24,7 +29,7 @@ public class Empresa extends Thread {
     public int costoPcTGrafica;
     public int contador;
 
-    public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen) {
+    public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen, JLabel[] labels) {
         this.nombre = nombre;
         this.gananciasBrutas = 0;
         this.costoOperaciones = 0;
@@ -36,6 +41,7 @@ public class Empresa extends Thread {
         this.listaTrabajadores = new Trabajador[22];
         this.segundosXdia = segundosXdia;
         this.almacen = almacen;
+        this.labels = labels;
         if ("Apple".equals(this.nombre)) {
             this.pcNormal = new int[] {2,1,4,4,0};
             this.pcTGrafica = new int[] {2,1,4,4,2};
@@ -51,28 +57,28 @@ public class Empresa extends Thread {
         }
     }
     
-    public synchronized void verificarAumento() {
-        while (true) {
-            try {
-                Thread.sleep((long) segundosXdia / 87);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (this.almacen.almacen[5] != this.contador) {
-                this.contador = this.almacen.almacen[5];
-                for (int i = 0; i < this.listaTrabajadores.length; i++) {
-                    // Si hay espacio disponible y el trabajador está en espera (activo == 2)
-                    if (this.almacen.almacen[this.listaTrabajadores[i].rolIndex] < this.almacen.capacidadMax[this.listaTrabajadores[i].rolIndex]) {
-                        if (this.listaTrabajadores[i].activo == 2) {
-                            this.almacen.almacen[this.listaTrabajadores[i].rolIndex] ++; // pendiente
-                            this.listaTrabajadores[i].activo = 1; // Reactivar el trabajador
-                            this.listaTrabajadores[i].run(); // Reanudar el trabajo
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    public synchronized void verificarAumento() {
+//        while (true) {
+//            try {
+//                Thread.sleep((long) segundosXdia / 87);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            if (this.almacen.almacen[5] != this.contador) {
+//                this.contador = this.almacen.almacen[5];
+//                for (int i = 0; i < this.listaTrabajadores.length; i++) {
+//                    // Si hay espacio disponible y el trabajador está en espera (activo == 2)
+//                    if (this.almacen.almacen[this.listaTrabajadores[i].rolIndex] < this.almacen.capacidadMax[this.listaTrabajadores[i].rolIndex]) {
+//                        if (this.listaTrabajadores[i].activo == 2) {
+//                            this.almacen.almacen[this.listaTrabajadores[i].rolIndex] ++; // pendiente
+//                            this.listaTrabajadores[i].activo = 1; // Reactivar el trabajador
+//                            this.listaTrabajadores[i].run(); // Reanudar el trabajo
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public String getNombre() {
         return nombre;
@@ -135,7 +141,7 @@ public class Empresa extends Thread {
     public void crearTrabajadores(int[] tipos) {
         // Crea un trabajador de cada tipo, incluyendo el ensamblador
         for (int i = 0; i < 22; i++) {
-            Trabajador trabajador = new Trabajador(i, almacen, this.nombre);
+            Trabajador trabajador = new Trabajador(i, almacen, this.nombre, this);
             listaTrabajadores[i] = trabajador;
             
             //project manager
@@ -170,8 +176,10 @@ public class Empresa extends Thread {
     }
     
     //cantidad: cantidad de trabajadores a asignar. area: rol  a asignar
-    public void asignarArea(int area) {
+    public void asignarArea( int area) {
         try{
+            
+            int cantidadSolicitada = 1;
             int[] inactivos = trabajadoresInactivos();
             int contador = 0;
 
@@ -182,17 +190,23 @@ public class Empresa extends Thread {
                 }
             }
 
-            // Verificamos si hay suficientes inactivos para la cantidad solicitada
-            if (contador == 0) {
-                throw new IllegalArgumentException("Error, no hay trabajadores inactivos.");
-            }
+//            // Verificamos si hay suficientes inactivos para la cantidad solicitada
+//            if (contador < cantidadSolicitada) {
+//                throw new IllegalArgumentException("Error, no hay trabajadores inactivos.");
+//            }
 
             // Asigna el rol a los trabajadores inactivos y los reactiva
             for (int i = 0; i < inactivos.length; i++) {
                 if (inactivos[i] == 0) {
                     listaTrabajadores[i].setRol(area, segundosXdia);
                     listaTrabajadores[i].start();      // Inicia o reinicia el hilo del trabajador
-                    break;
+                    
+                    cantidadSolicitada--;
+                    
+                    if(cantidadSolicitada <= 0){
+                        break;                       
+                    }
+                    
                 }
             }
         }
@@ -228,4 +242,52 @@ public class Empresa extends Thread {
             throw new IllegalArgumentException("Error, el trabajador ingresado no puede realizar esta funcion.");
         }
     }
+    
+    public void actualizarCostosOperativos(){
+        
+        synchronized (this) {
+                    for (int i = 0; i < this.listaTrabajadores.length; i++) {
+                        this.costoOperaciones += this.listaTrabajadores[i].dineroAcumulado;
+                    }
+        
+        
+                 SwingUtilities.invokeLater(() -> {
+                    labels[7].setText("Costos Operativos:$ " + this.costoOperaciones);
+                });
+    }
+    }
+    
+        public void actualizarGananciasBruto(int computadoras, int computadorasGraficas){
+        
+        synchronized (this) {
+                    int gananciasComputadora = computadoras * this.costoPcNormal;
+                    int gananciasComputadoraGrafica = computadorasGraficas * this.costoPcTGrafica;
+                    
+                    this.gananciasBrutas = gananciasComputadora + gananciasComputadoraGrafica;
+        
+        
+                 SwingUtilities.invokeLater(() -> {
+                    labels[8].setText("GananciasBruto:$ " + this.gananciasBrutas);
+                });
+    }
+        
+        actualizarUtilidad();
+        
+    }
+        
+        
+        
+        public void actualizarUtilidad(){
+            
+            this.utilidad = this.gananciasBrutas - this.costoOperaciones;
+              SwingUtilities.invokeLater(() -> {
+                    labels[9].setText("Utilidad:$ " + this.utilidad);
+                });
+        }
 }
+    
+    
+    
+
+
+

@@ -1,32 +1,47 @@
 package clases;
 
 import java.util.concurrent.Semaphore;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 public class Almacen {
+  
+    private JLabel[] label;
     public int[] almacen;
+    private final String[] componentes;
     public final int[] capacidadMax;
     private final Semaphore[] semaforos;
     private int contadorComputadorasEnsambladas = 0; // Contador global para computadoras ensambladas
+    private int contadorComputadorasTarjetasEnsambladas = 0; // Contador global para computadoras ensambladas
 
-    public Almacen(int[] capacidadMax) {
+    
+    public Almacen(int[] capacidadMax, JLabel[] label) {
         this.almacen = new int[] {0, 0, 0, 0, 0, 0, 0};  // Almacén con seis tipos de componentes
         this.capacidadMax = capacidadMax;
+        this.componentes = new String[] {"Placa", "CPU", "RAM", "Fuentes", "Tarjetas", "Computadoras", "Computadoras Graficas"};
         this.semaforos = new Semaphore[capacidadMax.length];
+        this.label = label;
         
         for (int i = 0; i < semaforos.length; i++) {
             this.semaforos[i] = new Semaphore(1); // Un semáforo para cada tipo de componente
         }
+
     }
     
-    public synchronized boolean necesitaTarjetaGrafica() {
-        return contadorComputadorasEnsambladas >= 5;
+    public synchronized boolean necesitaTarjetaGrafica(String empresa) {
+        if("Apple".equals(empresa)){
+            return contadorComputadorasEnsambladas >= 5;
+        }
+        else{
+            return contadorComputadorasEnsambladas >= 2;
+        }
     }
     
     public synchronized void incrementarContadorComputadoras(boolean esConTarjetaGrafica) {
         if (!esConTarjetaGrafica) {
             contadorComputadorasEnsambladas++;
         } else {
-            contadorComputadorasEnsambladas = 0;
+            contadorComputadorasTarjetasEnsambladas++;
         }
     }
     
@@ -35,6 +50,11 @@ public class Almacen {
         try {
             if (almacen[tipo] < capacidadMax[tipo]) {
                 almacen[tipo]++;
+                
+                SwingUtilities.invokeLater(() -> {
+                    label[tipo].setText("Cantidad" + componentes[tipo] +':'+ almacen[tipo]);
+                });
+                
                 System.out.println("Componente de tipo " + tipo + " agregado. Total en almacén: " + almacen[tipo]);
             } else {
                 System.out.println("No se puede agregar. El almacén de tipo " + tipo + " está lleno.");

@@ -1,5 +1,7 @@
 package clases;
 
+import javax.swing.JLabel;
+
 public class Controlador {
     
     public int segundosXdia;  // Duración de un "día" en segundos
@@ -44,9 +46,9 @@ public class Controlador {
     }
 
     // Método para crear y configurar una Empresa con el Almacen compartido
-    public Empresa crearEmpresa(String nombre, Almacen almacen) {
+    public Empresa crearEmpresa(String nombre, Almacen almacen, JLabel[] labels) {
         // Crear la empresa con el nombre, deadline y segundos por día
-        Empresa empresa = new Empresa(nombre, this.deadline, this.segundosXdia, almacen);
+        Empresa empresa = new Empresa(nombre, this.deadline, this.segundosXdia, almacen, labels);
         
         // Crear los trabajadores con el número de roles especificados
         int[] listaRoles = new int[] {this.placaBase, this.cpu, this.ram, this.fuenteAlimentacion, this.tarjetaGrafica, this.ensamblador};

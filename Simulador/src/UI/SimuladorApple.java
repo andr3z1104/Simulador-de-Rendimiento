@@ -8,6 +8,11 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
+import clases.*;
+import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 //JLABEL 40 - 46 Cantidad Almacenes
 /**
  *
@@ -15,6 +20,11 @@ import javax.swing.SpinnerNumberModel;
  */
 public class SimuladorApple extends javax.swing.JFrame {
 
+           private Empresa empresa;
+           private Almacen almacen;
+           private Controlador controlador;
+           private JLabel[] labels;
+           private JSpinner[] spinners;
     /**
      * Creates new form SimuladorApple
      */
@@ -22,6 +32,13 @@ public class SimuladorApple extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(this);
         this.setResizable(false);
+        
+        //costosOperativos = costosOperativosLabel;
+        
+        labels = new JLabel[] {cantidadPlaca,cantidadCPU,cantidadRAM,cantidadFuentes,
+            cantidadTarjetas,cantidadComputadoras,cantidadComputadorasGraficas, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel};
+        spinners = new  JSpinner[]{placaSpinner, cpuSpinner, ramSpinner, fuentesSpinner, tarjetasSpinner, ensambladoresSpinner};
+        
         
         SetImageLabel(jLabel1, "src/imagenes/12-Light.jpg");
         SetImageLabel(jLabel2, "src/imagenes/LogoApple.jfif");
@@ -37,8 +54,7 @@ public class SimuladorApple extends javax.swing.JFrame {
         SetImageLabel(jLabel49, "src/imagenes/DirectorLogo.png");
         
 
-         // Configuración de los spinners con modelos individuales
-        JSpinner[] spinners = {placaSpinner, cpuSpinner, ramSpinner, fuentesSpinner, tarjetasSpinner, ensambladoresSpinner};
+
 
         // Configurar cada spinner con un modelo separado
         for (JSpinner sp : spinners) {
@@ -46,6 +62,41 @@ public class SimuladorApple extends javax.swing.JFrame {
             sp.setModel(model);
         }
     
+    }
+    
+    public void Arrancar(Txt t){
+          Controlador controladorApple = t.crearControlador(
+            t.segundosXdia, t.deadline, t.placaBase,
+            t.cpu, t.ram, t.fuenteAlimentacion,
+            t.tarjetaGrafica, t.ensamblador, 
+            t.cantidadTrabajadoresActivos
+            );
+         
+         setControlador(controladorApple);
+         
+       
+            int[] maximoApple = {25, 20, 55, 35, 10, Integer.MAX_VALUE, Integer.MAX_VALUE};  // Inicializar el array con los valores
+            
+            Almacen almacenApple = new Almacen(maximoApple, labels);  // Pasar el array al constructor
+            setAlmacen(almacenApple);
+            Empresa empresaApple = controladorApple.crearEmpresa("Apple", almacen, labels);
+         
+            setEmpresa(empresaApple);
+            
+            
+         int[] valores = {t.placaBase, t.cpu, t.ram, t.fuenteAlimentacion, t.tarjetaGrafica, t.ensamblador};
+
+          
+          for (int i = 0; i < this.spinners.length; i++) {
+             this.spinners[i].setValue(valores[i]);
+        }
+          
+          
+                   for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                System.out.println(empresa.listaTrabajadores[i].rol);             
+            }
+                   
+                   System.out.println(empresa.deadLine);
     }
 
     /**
@@ -76,9 +127,9 @@ public class SimuladorApple extends javax.swing.JFrame {
         laborDirector = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         descuentoPM = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
+        utilidadLabel = new javax.swing.JLabel();
+        gananciasBrutoLabel = new javax.swing.JLabel();
+        costosOperativosLabel = new javax.swing.JLabel();
         laborPM = new javax.swing.JLabel();
         faltasPM = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -115,7 +166,6 @@ public class SimuladorApple extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(650, 740));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
@@ -234,7 +284,7 @@ public class SimuladorApple extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("X");
+        jLabel10.setText("0");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 200, 30));
 
         descuentoPM.setBackground(new java.awt.Color(255, 255, 255));
@@ -244,26 +294,26 @@ public class SimuladorApple extends javax.swing.JFrame {
         descuentoPM.setOpaque(true);
         jPanel1.add(descuentoPM, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 540, 320, 60));
 
-        jLabel13.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel13.setText("Utilidad: $X");
-        jLabel13.setOpaque(true);
-        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, 310, 30));
+        utilidadLabel.setBackground(new java.awt.Color(255, 255, 255));
+        utilidadLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        utilidadLabel.setForeground(new java.awt.Color(0, 0, 0));
+        utilidadLabel.setText("Utilidad: $0");
+        utilidadLabel.setOpaque(true);
+        jPanel1.add(utilidadLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, 310, 30));
 
-        jLabel14.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel14.setText("Ganancias en Bruto: $X");
-        jLabel14.setOpaque(true);
-        jPanel1.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 50, 310, 30));
+        gananciasBrutoLabel.setBackground(new java.awt.Color(255, 255, 255));
+        gananciasBrutoLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        gananciasBrutoLabel.setForeground(new java.awt.Color(0, 0, 0));
+        gananciasBrutoLabel.setText("Ganancias en Bruto: $0");
+        gananciasBrutoLabel.setOpaque(true);
+        jPanel1.add(gananciasBrutoLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 50, 310, 30));
 
-        jLabel15.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel15.setText("Costos Operativos:$X");
-        jLabel15.setOpaque(true);
-        jPanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 80, 310, 30));
+        costosOperativosLabel.setBackground(new java.awt.Color(255, 255, 255));
+        costosOperativosLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        costosOperativosLabel.setForeground(new java.awt.Color(0, 0, 0));
+        costosOperativosLabel.setText("Costos Operativos:$0");
+        costosOperativosLabel.setOpaque(true);
+        jPanel1.add(costosOperativosLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 80, 310, 30));
 
         laborPM.setBackground(new java.awt.Color(245, 245, 245));
         laborPM.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -275,7 +325,7 @@ public class SimuladorApple extends javax.swing.JFrame {
         faltasPM.setBackground(new java.awt.Color(245, 245, 245));
         faltasPM.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         faltasPM.setForeground(new java.awt.Color(51, 51, 51));
-        faltasPM.setText("Faltas: X");
+        faltasPM.setText("Faltas: 0");
         faltasPM.setOpaque(true);
         jPanel1.add(faltasPM, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 480, 310, 60));
 
@@ -303,7 +353,7 @@ public class SimuladorApple extends javax.swing.JFrame {
 
         cantidadComputadoras.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         cantidadComputadoras.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadComputadoras.setText("Cantidad Computadores: X");
+        cantidadComputadoras.setText("Cantidad Computadores: 0");
         jPanel1.add(cantidadComputadoras, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 430, 260, 30));
 
         jLabel24.setText("Carpeta");
@@ -314,7 +364,7 @@ public class SimuladorApple extends javax.swing.JFrame {
 
         cantidadComputadorasGraficas.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         cantidadComputadorasGraficas.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadComputadorasGraficas.setText("Cantidad Computadoras Graficas: X");
+        cantidadComputadorasGraficas.setText("Cantidad Computadoras Graficas: 0");
         jPanel1.add(cantidadComputadorasGraficas, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 450, 410, 30));
 
         jLabel27.setBackground(new java.awt.Color(255, 255, 255));
@@ -324,12 +374,17 @@ public class SimuladorApple extends javax.swing.JFrame {
 
         cantidadTarjetas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         cantidadTarjetas.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadTarjetas.setText("Cantidad Tarjetas: X");
+        cantidadTarjetas.setText("Cantidad Tarjetas: 0");
         jPanel1.add(cantidadTarjetas, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 380, 190, 40));
 
         cantidadPlaca.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         cantidadPlaca.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadPlaca.setText("Cantidad Place Base: X");
+        cantidadPlaca.setText("Cantidad Place Base: 0");
+        cantidadPlaca.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                cantidadPlacaPropertyChange(evt);
+            }
+        });
         jPanel1.add(cantidadPlaca, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 180, 230, 40));
 
         jLabel28.setBackground(new java.awt.Color(245, 245, 245));
@@ -347,7 +402,7 @@ public class SimuladorApple extends javax.swing.JFrame {
 
         cantidadRAM.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         cantidadRAM.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadRAM.setText("Cantidad RAM: X");
+        cantidadRAM.setText("Cantidad RAM: 0");
         jPanel1.add(cantidadRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 280, 210, 40));
 
         jLabel31.setBackground(new java.awt.Color(245, 245, 245));
@@ -357,13 +412,13 @@ public class SimuladorApple extends javax.swing.JFrame {
 
         cantidadCPU.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         cantidadCPU.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadCPU.setText("Cantidad CPU: X");
+        cantidadCPU.setText("Cantidad CPU: 0");
         jPanel1.add(cantidadCPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 230, 220, 40));
         cantidadCPU.getAccessibleContext().setAccessibleParent(cantidadPlaca);
 
         cantidadFuentes.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         cantidadFuentes.setForeground(new java.awt.Color(153, 151, 152));
-        cantidadFuentes.setText("Cantidad Fuentes: X");
+        cantidadFuentes.setText("Cantidad Fuentes: 0");
         jPanel1.add(cantidadFuentes, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 330, 210, 40));
         cantidadFuentes.getAccessibleContext().setAccessibleParent(cantidadPlaca);
 
@@ -439,33 +494,278 @@ public class SimuladorApple extends javax.swing.JFrame {
     
     //Funcion para cambiar cantidad de Trabajadores PLACA BASE
     private void placaSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_placaSpinnerStateChanged
-        // TODO add your handling code here:
+        
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Placa base")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.placaSpinner.setValue((int)this.placaSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)placaSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(0, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)placaSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Placa base")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            } 
     }//GEN-LAST:event_placaSpinnerStateChanged
 
     //Funcion para cambiar cantidad de Trabajadores CPU
     private void cpuSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_cpuSpinnerStateChanged
-        // TODO add your handling code here:
+                
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("CPU")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.cpuSpinner.setValue((int)this.cpuSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)cpuSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(1, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)cpuSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("CPU")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            } 
     }//GEN-LAST:event_cpuSpinnerStateChanged
 
     //Funcion para cambiar cantidad de Trabajadores RAM
     private void ramSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ramSpinnerStateChanged
-        // TODO add your handling code here:
+               
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("RAM")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.ramSpinner.setValue((int)this.ramSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)ramSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(2, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)ramSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("RAM")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            } 
     }//GEN-LAST:event_ramSpinnerStateChanged
 
     //Funcion para cambiar cantidad de Trabajadores FUENTES ALIMENTACION
     private void fuentesSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_fuentesSpinnerStateChanged
-        // TODO add your handling code here:
+               
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Fuente de alimentacion")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.fuentesSpinner.setValue((int)this.fuentesSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)fuentesSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(3, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)fuentesSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Fuente de alimentacion")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            } 
     }//GEN-LAST:event_fuentesSpinnerStateChanged
 
     //Funcion para cambiar cantidad de Trabajadores TARJETAS GRAFICAS
     private void tarjetasSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tarjetasSpinnerStateChanged
-        // TODO add your handling code here:
+                       
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Tarjeta grafica")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.tarjetasSpinner.setValue((int)this.tarjetasSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)tarjetasSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(4, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)tarjetasSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Tarjeta Grafica")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            }
     }//GEN-LAST:event_tarjetasSpinnerStateChanged
 
     //Funcion para cambiar cantidad de Trabajadores ENSAMBLADORES
     private void ensambladoresSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ensambladoresSpinnerStateChanged
-        // TODO add your handling code here:
+                            
+     int previousValue = 0; // Resetea el contador antes de contar.
+    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+        if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Ensamblador")) {
+            previousValue++; // Incrementa el conteo si el rol es "placa base".
+        }
+    }
+        
+        
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
+                this.ensambladoresSpinner.setValue((int)this.ensambladoresSpinner.getValue() - 1);
+                this.repaint();
+        }
+        else{
+            
+            // Lógica para asignar o quitar roles de acuerdo al cambio.
+        if ((int)ensambladoresSpinner.getValue() > previousValue) {
+            // Si se incrementa, asignar un rol "placa base" a un trabajador inactivo.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].activo == 0) {
+//                    empresa.listaTrabajadores[i].rol = "Placa base"; // Asignar el rol
+//                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
+                    empresa.listaTrabajadores[i].setRol(5, empresa.segundosXdia);
+                    empresa.listaTrabajadores[i].start();
+                    break; // Solo asignar a un trabajador
+                }
+            }
+        } else if ((int)ensambladoresSpinner.getValue() < previousValue) {
+            // Si se decrementa, quitar el rol "placa base" de un trabajador.
+            for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
+                if (empresa.listaTrabajadores[i].rol != null && empresa.listaTrabajadores[i].rol.equals("Ensamblador")) {
+//                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
+//                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
+                    empresa.listaTrabajadores[i].desactivar();
+                    break; // Solo quitar de un trabajador
+                    }
+                  }
+                }
+            }
     }//GEN-LAST:event_ensambladoresSpinnerStateChanged
+
+    //No lo puedo quitar, esta funcion no sirve para nada
+    private void cantidadPlacaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cantidadPlacaPropertyChange
+                       // System.out.println(almacen.almacen[0]);
+
+//        while(true){
+//            if(getAlmacen().almacen[0]!=0){
+//                cantidadPlaca.setText("Cantidad Place Base:"+String.valueOf(getAlmacen().almacen[0]) );
+//        }
+//        }
+    }//GEN-LAST:event_cantidadPlacaPropertyChange
 
     /**
      * @param args the command line arguments
@@ -517,16 +817,15 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JLabel cantidadPlaca;
     private javax.swing.JLabel cantidadRAM;
     private javax.swing.JLabel cantidadTarjetas;
+    private javax.swing.JLabel costosOperativosLabel;
     private javax.swing.JSpinner cpuSpinner;
     private javax.swing.JLabel descuentoPM;
     private javax.swing.JSpinner ensambladoresSpinner;
     private javax.swing.JLabel faltasPM;
     private javax.swing.JSpinner fuentesSpinner;
+    private javax.swing.JLabel gananciasBrutoLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
@@ -566,5 +865,30 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JSpinner placaSpinner;
     private javax.swing.JSpinner ramSpinner;
     private javax.swing.JSpinner tarjetasSpinner;
+    private javax.swing.JLabel utilidadLabel;
     // End of variables declaration//GEN-END:variables
+
+    public Controlador getControlador() {
+        return controlador;
+    }
+
+    public void setControlador(Controlador controlador) {
+        this.controlador = controlador;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public Almacen getAlmacen() {
+        return almacen;
+    }
+
+    public void setAlmacen(Almacen almacen) {
+        this.almacen = almacen;
+    }
 }

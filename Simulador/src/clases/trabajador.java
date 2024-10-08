@@ -2,7 +2,12 @@
 package clases;
 import java.util.Arrays;
 
+
+
+
+
 public class Trabajador extends Thread {
+    private  Empresa empresa;
     public final int ide;
     public String rol;
     public int salarioPorHora;
@@ -25,7 +30,8 @@ public class Trabajador extends Thread {
     public int intervaloTGrafica;
     
     // Constructor
-    public Trabajador(int id, Almacen almacen, String nombre) {
+    public Trabajador(int id, Almacen almacen, String nombre, Empresa empresa) {
+        this.empresa = empresa;
         this.ide = id;
         this.dineroAcumulado = 0;
         this.activo = 0;
@@ -130,16 +136,20 @@ public class Trabajador extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (activo == 1) {
             try {
                 if (activo == 1) {
                     if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
                         Thread.sleep((long) diasParaGenerarProducto * 1000);
                         System.out.println(Arrays.toString(this.almacen.almacen));
-
+                        
+                        this.dineroAcumulado += this.salarioPorHora;
+                        empresa.actualizarCostosOperativos();
+                        
                         synchronized (almacen) {
                             if (almacen.almacen[this.rolIndex] < almacen.capacidadMax[this.rolIndex]) {
                                 almacen.agregarComponente(rolIndex);
+
                             } else {
                                 System.out.println("Inventario lleno. Trabajador " + ide + " esperando...");
                                 this.activo = 2; // Cambiar a estado de espera
@@ -147,8 +157,8 @@ public class Trabajador extends Thread {
                         }
                     } else if (rolIndex == 5) { // Ensamblador
                         int[] computadoras;
-                        boolean esConTarjetaGrafica = almacen.necesitaTarjetaGrafica();
-
+                        boolean esConTarjetaGrafica = almacen.necesitaTarjetaGrafica(nombre);
+                        
                         if (esConTarjetaGrafica) {
                             computadoras = this.pcTGrafica;
                             System.out.println("Ensamblando computadora con tarjeta gráfica obligatoriamente.");
@@ -163,11 +173,14 @@ public class Trabajador extends Thread {
 
                                 if (esConTarjetaGrafica) {
                                     almacen.agregarComponente(this.rolIndex + 1); // Agregar computadora con tarjeta gráfica
+                                    empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
                                 } else {
                                     almacen.agregarComponente(this.rolIndex); // Agregar computadora normal
+                                    empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
                                 }
                                 System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
-
+                               
+                                 
                                 almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
                             } else {
                                 Thread.sleep(50);
@@ -190,4 +203,6 @@ public class Trabajador extends Thread {
         }
         System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
     }
+    
+    
 }
