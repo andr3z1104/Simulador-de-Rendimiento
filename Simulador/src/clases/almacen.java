@@ -10,7 +10,7 @@ public class Almacen {
     public int[] almacen;
     private final String[] componentes;
     public final int[] capacidadMax;
-    private final Semaphore[] semaforos;
+    public final Semaphore[] semaforos;
     private int contadorComputadorasEnsambladas = 0; // Contador global para computadoras ensambladas
     private int contadorComputadorasTarjetasEnsambladas = 0; // Contador global para computadoras ensambladas
 

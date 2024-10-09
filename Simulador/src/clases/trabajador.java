@@ -1,13 +1,13 @@
 
 package clases;
 import java.util.Arrays;
-
+import java.util.Random;
 
 
 
 
 public class Trabajador extends Thread {
-    private  Empresa empresa;
+    private Empresa empresa;
     public final int ide;
     public String rol;
     public int salarioPorHora;
@@ -17,7 +17,7 @@ public class Trabajador extends Thread {
     public final String[] roles;
     public final int[] salarios;
     public final double[] dias;
-    public int horasOcio;
+    public int accion;
     public int intervaloOcio;
     public int horasActivas;
     public int chequeoDelPM;
@@ -28,6 +28,7 @@ public class Trabajador extends Thread {
     public int[] pcTGrafica;
     public String nombre;
     public int intervaloTGrafica;
+    public int segundosDia;
     
     // Constructor
     public Trabajador(int id, Almacen almacen, String nombre, Empresa empresa) {
@@ -38,7 +39,6 @@ public class Trabajador extends Thread {
         this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
         this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
         this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
-        this.horasOcio = 0;
         this.intervaloOcio = 0;
         this.horasActivas = 0;
         this.chequeoDelPM = 0;
@@ -46,6 +46,7 @@ public class Trabajador extends Thread {
         this.almacen = almacen;
         this.rolIndex = -1;
         this.nombre = nombre;
+        this.segundosDia = empresa.segundosXdia;
         if ("Apple".equals(this.nombre)) {
             this.pcNormal = new int[] {2,1,4,4,0};
             this.pcTGrafica = new int[] {2,1,4,4,2};
@@ -92,8 +93,6 @@ public class Trabajador extends Thread {
         this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
         
         if (index == 6){
-            //equivalente a 16 horas
-            this.horasOcio = segundosXdia * 2 / 3;
             //equivalente a 30 mins
             this.intervaloOcio = segundosXdia / 48;
             //equivalente a 8 horas
@@ -136,6 +135,7 @@ public class Trabajador extends Thread {
 
     @Override
     public void run() {
+        int contador = 0;
         while (activo == 1) {
             try {
                 if (activo == 1) {
@@ -143,7 +143,7 @@ public class Trabajador extends Thread {
                         Thread.sleep((long) diasParaGenerarProducto * 1000);
                         System.out.println(Arrays.toString(this.almacen.almacen));
                         
-                        this.dineroAcumulado += this.salarioPorHora;
+                        this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto);
                         empresa.actualizarCostosOperativos();
                         
                         synchronized (almacen) {
@@ -166,6 +166,8 @@ public class Trabajador extends Thread {
                             computadoras = this.pcNormal;
                         }
 
+                        this.dineroAcumulado += (this.salarioPorHora * 24);                        
+                        
                         synchronized (almacen) {
                             if (almacen.verificarDisponibilidad(computadoras)) {
                                 Thread.sleep((long) diasParaGenerarProducto * 1000);
@@ -183,7 +185,52 @@ public class Trabajador extends Thread {
                                  
                                 almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
                             } else {
-                                Thread.sleep(50);
+                                Thread.sleep(this.segundosDia * 10 / 864); //duracion de 1 milisegundo en relacion al tiempo del dia
+                            }
+                        }
+                    }
+                    else if (rolIndex == 6){
+                        for (int i = 0; i < 32; i++) { //1 anime, 0 activo
+                            if (i % 2 == 0) {
+                                this.accion = 1;
+                            } else {
+                                this.accion = 0;
+                            }
+                            // Duerme por la mitad de una hora de simulación
+                            Thread.sleep((long) this.intervaloOcio * 1000);
+                        }
+                        this.accion = 0;
+                        Thread.sleep((long)this.horasActivas * 1000);
+                        
+                        this.dineroAcumulado += (this.salarioPorHora * 24);
+
+                        empresa.deadLine -= 1;
+                    }
+                    else if (rolIndex == 7){
+                        this.dineroAcumulado += (this.salarioPorHora * 24);////////////////////////////////////
+                        int resto = (this.segundosDia / 24) - this.chequeoDelPM;
+                        
+                        if (empresa.deadLine == 0) {
+                            this.accion = 1;
+                            Thread.sleep((long) this.segundosDia);
+                            empresa.setDeadLine();
+                            empresa.mandarComputadoras();
+                        }
+                        else {
+                            Random random = new Random();
+                            int randomHour = random.nextInt(24);
+
+                            for (int i = 0; i < 24; i++) {
+                                if (i == random.nextInt(24)) {
+                                    this.accion = 1;
+                                    revisarPM();
+                                    Thread.sleep((long) this.chequeoDelPM * 1000);
+                                    revisarPM();
+                                    Thread.sleep(resto);
+                                } else {
+                                    this.accion = 0;
+                                    Thread.sleep(resto);
+                                }
                             }
                         }
                     }
@@ -192,9 +239,16 @@ public class Trabajador extends Thread {
                         if (almacen.almacen[rolIndex] < almacen.capacidadMax[rolIndex]) {
                             activo = 1; // Reactivarse cuando haya espacio
                         }
+                    } // 60 * 60
+                    
+                    contador += 1;
+                    if (contador == 1440){
+                        this.dineroAcumulado += (this.salarioPorHora);
+                        contador = 0;
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(this.segundosDia * 1 / 86400 * 1000); //duracion de 1 segundo en relacion al tiempo del dia
                 }
+                
             } catch (InterruptedException e) {
                 System.out.println("Error: " + e.getMessage());
                 Thread.currentThread().interrupt();
@@ -204,5 +258,12 @@ public class Trabajador extends Thread {
         System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
     }
     
+    public void revisarPM(){
+        if (this.accion == empresa.listaTrabajadores[20].accion){
+            empresa.listaTrabajadores[20].descontado++;
+            empresa.actualizarCostosOperativos();
+ }
+
+    }
     
 }

@@ -132,8 +132,21 @@ public class Empresa {
         return deadLine;
     }
 
-    public void setDeadLine(int deadLine) {
-        this.deadLine = deadLine;
+    public void setDeadLine() {
+        this.deadLine = this.staticDeadline;
+    }
+    
+    public void mandarComputadoras() throws InterruptedException{
+        almacen.semaforos[5].acquire();
+        int compus = almacen.almacen[5];
+        almacen.almacen[5] = 0;
+        almacen.semaforos[5].release();
+        almacen.semaforos[6].acquire();
+        int compusTG = almacen.almacen[5];
+        almacen.almacen[6] = 0;
+        almacen.semaforos[6].release();
+        this.actualizarGananciasBruto(compus, compusTG);
+        this.actualizarUtilidad();
     }
     
     //ve el ejemplo que te deje en el main para que veas como funciona
