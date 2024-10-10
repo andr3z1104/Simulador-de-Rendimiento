@@ -1,5 +1,9 @@
 package clases;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JLabel;
 
 public class Controlador {
@@ -65,4 +69,5 @@ public class Controlador {
         int computadorasEnsambladas = empresa.computadorasProducidas + empresa.computadorasTarjetaGrafica;
         System.out.println("Estado de la producción en " + empresa.nombre + ": " + computadorasEnsambladas + " computadoras ensambladas.");
     }
+    
 }

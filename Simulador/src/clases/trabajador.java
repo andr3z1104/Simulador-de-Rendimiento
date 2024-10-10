@@ -29,6 +29,7 @@ public class Trabajador extends Thread {
     public String nombre;
     public int intervaloTGrafica;
     public int segundosDia;
+    public double multiplier;
     
     // Constructor
     public Trabajador(int id, Almacen almacen, String nombre, Empresa empresa) {
@@ -38,7 +39,7 @@ public class Trabajador extends Thread {
         this.activo = 0;
         this.roles = new String[] {"Placa base", "CPU", "RAM", "Fuente de alimentacion", "Tarjeta grafica", "Ensamblador", "Project manager", "Director"};
         this.salarios = new int[] {20, 26, 40, 16, 34, 50, 40, 60};
-        this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 0, 1};
+        this.dias = new double[] {4, 4, 1, 0.20, 2, 2, 1, 1};
         this.intervaloOcio = 0;
         this.horasActivas = 0;
         this.chequeoDelPM = 0;
@@ -88,21 +89,29 @@ public class Trabajador extends Thread {
     public void setRol(int index, int segundosXdia) {
         this.rol = roles[index];
         this.salarioPorHora = salarios[index];
-        this.diasParaGenerarProducto = dias[index] * segundosXdia;
+        this.diasParaGenerarProducto = dias[index] * segundosXdia * 1000;
+        this.multiplier = dias[index];
         this.activo = 1;
         this.rolIndex = index; // Índice del rol que también usaremos para el tipo de componente en el almacén
         
         if (index == 6){
             //equivalente a 30 mins
-            this.intervaloOcio = segundosXdia / 48;
+            this.intervaloOcio = this.segundosDia * 1000 / 48;
             //equivalente a 8 horas
-            this.horasActivas = segundosXdia / 3;
+            this.horasActivas = (this.segundosDia * 1000 / 3);
+            System.out.println("Intervalo ocio");
+            System.out.println(this.intervaloOcio);
+            System.out.println("Seg dia");
+            System.out.println(this.segundosDia);
+            System.out.println("horas act");
+            System.out.println(this.horasActivas);
         }
         if (index == 7){
             //equivalente a 35 min (24 horas son 1440 min, si se multiplica 1440 por 7 y se divide entre 288 resulta 35)
-            this.chequeoDelPM = (int) (segundosXdia/24 * (35.0 / 60.0));
+            this.chequeoDelPM = this.segundosDia * 1000 * 7 / 288;
             System.out.println(this.chequeoDelPM);
         }
+        
     }
     
     //suma 100 al valor total de descontado, se le puede aniadir una funcion luego que inmediatamente sume 100 al profit de la empresa
@@ -141,10 +150,10 @@ public class Trabajador extends Thread {
             try {
                 if (activo == 1) {
                     if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
-                        Thread.sleep((long) diasParaGenerarProducto * 1000);
+                        Thread.sleep((long) this.diasParaGenerarProducto);
                         System.out.println(Arrays.toString(this.almacen.almacen));
                         
-                        this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto );
+                        this.dineroAcumulado += (int) (this.salarioPorHora * 24 * this.multiplier);
                         empresa.actualizarCostosOperativos();
                         
                         synchronized (almacen) {
@@ -171,8 +180,8 @@ public class Trabajador extends Thread {
                         
                         synchronized (almacen) {
                             if (almacen.verificarDisponibilidad(computadoras)) {
-                                Thread.sleep((long) diasParaGenerarProducto * 1000);
-                                 this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto);                        
+                                Thread.sleep((long) this.diasParaGenerarProducto);
+                                this.dineroAcumulado += (int) (this.salarioPorHora * 24 * this.multiplier);                        
                                 empresa.actualizarCostosOperativos();
                                 this.almacen.quitarComponente(computadoras);
 
@@ -188,22 +197,27 @@ public class Trabajador extends Thread {
                                  
                                 almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
                             } else {
-                                Thread.sleep(this.segundosDia * 10 / 864); //duracion de 1 milisegundo en relacion al tiempo del dia
+                                Thread.sleep(this.segundosDia * 1000); //duracion de 1 milisegundo en relacion al tiempo del dia
                             }
                         }
                     }
                     //Project Manager
                     else if (rolIndex == 6) { // Rol específico con índice 6
                         for (int i = 0; i < 32; i++) { // Alterna entre "acción 1" y "acción 0"
-                            this.accion = (i % 2 == 0) ? 1 : 0;
+                            if (i % 2 == 0){
+                                this.accion = 1;
+                            }
+                            else{
+                                this.accion = 0;
+                            }
 
                             // Duerme por la mitad de una hora de simulación
-                            Thread.sleep((long) this.intervaloOcio * 1000); // L para indicar que es un long
+                            Thread.sleep((this.intervaloOcio)); // L para indicar que es un long
                              empresa.actualizarActividadPM(accion);
                         }
 
                         this.accion = 0; // Resetea la acción después del ciclo
-                        Thread.sleep((long) this.horasActivas * 1000); // Duerme por el tiempo de horas activas
+                        Thread.sleep((long) this.horasActivas); // Duerme por el tiempo de horas activas
 
                         // Actualiza el dinero acumulado y los costos operativos de la empresa
                         this.dineroAcumulado += this.salarioPorHora * 24;
@@ -221,9 +235,9 @@ public class Trabajador extends Thread {
                         empresa.actualizarCostosOperativos();
 
                         // Calcula el tiempo restante para chequeo
-                        int resto = (this.segundosDia / 24) - this.chequeoDelPM;
+                        int resto = (this.segundosDia * 1000 / 24) - this.chequeoDelPM;
 
-                        if (empresa.deadLine == 0) {
+                        if (empresa.deadLine <= 0) {
                             this.accion = 0;
                             empresa.actualizarActividadDirector(1);
                             Thread.sleep((long)this.segundosDia * 1000); // Duerme por todo el día en segundos
@@ -241,13 +255,13 @@ public class Trabajador extends Thread {
                                 this.accion = 1;
                                 empresa.actualizarActividadDirector(2);
                                 revisarPM(); // Primera revisión del PM
-                                Thread.sleep((long) this.chequeoDelPM * 1000); // Espera el tiempo de chequeo
+                                Thread.sleep((long) this.chequeoDelPM); // Espera el tiempo de chequeo
                                 revisarPM(); // Segunda revisión del PM
-                                Thread.sleep((long)resto * 1000); // Duerme por el tiempo restante del día
+                                Thread.sleep((long)resto); // Duerme por el tiempo restante del día
                             } else {
                                 this.accion = 0;
                                 empresa.actualizarActividadDirector(3);
-                                Thread.sleep((long)segundosDia / 24 * 1000); // Duerme por el tiempo restante del día
+                                Thread.sleep((long)segundosDia * 1000 / 24); // Duerme por el tiempo restante del día
                             }
                         }
                     }
@@ -264,7 +278,7 @@ public class Trabajador extends Thread {
                         this.dineroAcumulado += (this.salarioPorHora);
                         contador = 0;
                     }
-                    Thread.sleep(this.segundosDia * 1 / 86400 * 1000); //duracion de 1 segundo en relacion al tiempo del dia
+                    Thread.sleep(this.segundosDia * 1 * 1000 / 86400); //duracion de 1 segundo en relacion al tiempo del dia
                 }
                 
             } catch (InterruptedException e) {

@@ -1,6 +1,10 @@
 package clases;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
@@ -271,7 +275,6 @@ public void actualizarCostosOperativos(){
                     b += this.listaTrabajadores[i].dineroAcumulado;
                 }
                 this.costoOperaciones = b;
-
                 // Asegurarse de que el índice 20 existe en listaTrabajadores
                 if (this.listaTrabajadores.length > 20 && this.listaTrabajadores[20] != null) {
                     if (this.faltas < this.listaTrabajadores[20].descontado){
@@ -282,6 +285,7 @@ public void actualizarCostosOperativos(){
                     }
                 }
             }
+            
 
             // Asegurarse de que labels no es null y tiene el índice 7
             if (labels != null && labels.length > 7 && labels[7] != null) {
@@ -398,7 +402,64 @@ public void actualizarCostosOperativos(){
          
 
         }
+
+                        
+                            
+    public void generarArchivo() {
+        String ruta = "txtResultante/archivo.txt";
+        File archivo = new File(ruta);
+
+        File carpeta = new File("txtResultante");
+        if (!carpeta.exists()) {
+            carpeta.mkdirs();
+        }
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+        int placa = 0;
+        int cpu = 0;
+        int ram = 0;
+        int fuente = 0;
+        int tarjeta = 0;
+        int ensamblador = 0;
+        for (int i = 0; i < listaTrabajadores.length; i++) {
+            if (listaTrabajadores[i].rolIndex == 0) {
+                placa += 1;
+            }
+            else if (listaTrabajadores[i].rolIndex == 1) {
+                cpu += 1;
+            }
+            else if (listaTrabajadores[i].rolIndex == 2) {
+                ram += 1;
+            }
+            else if (listaTrabajadores[i].rolIndex == 3) {
+                fuente += 1;
+            }            
+            else if (listaTrabajadores[i].rolIndex == 4) {
+                tarjeta += 1;
+            }            
+            else if (listaTrabajadores[i].rolIndex == 5) {
+                ensamblador += 1;
+            }
+            else{
+                
+            }
+        }
+            String p = Integer.toString(placa);
+            String c = Integer.toString(cpu);
+            String r = Integer.toString(ram);
+            String f = Integer.toString(fuente);
+            String t = Integer.toString(tarjeta);
+            String e = Integer.toString(ensamblador);
             
+            String texto = p + "," + c + "," + r + "," + f + "," + t + "," + e + ","; 
+            bw.write(this.segundosXdia);
+            bw.newLine();
+            bw.write(this.staticDeadline);
+            bw.newLine();
+            bw.write(texto);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }    
 }
 
 
