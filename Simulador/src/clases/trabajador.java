@@ -100,7 +100,8 @@ public class Trabajador extends Thread {
         }
         if (index == 7){
             //equivalente a 35 min (24 horas son 1440 min, si se multiplica 1440 por 7 y se divide entre 288 resulta 35)
-            this.chequeoDelPM = segundosXdia * 7 / 288;
+            this.chequeoDelPM = (int) (segundosXdia/24 * (35.0 / 60.0));
+            System.out.println(this.chequeoDelPM);
         }
     }
     
@@ -192,59 +193,61 @@ public class Trabajador extends Thread {
                         }
                     }
                     //Project Manager
-                    else if (rolIndex == 6){
-                        for (int i = 0; i < 32; i++) { //1 anime, 0 activo
-                            if (i % 2 == 0) {
-                                this.accion = 1;
-                            } else {
-                                this.accion = 0;
-                            }
+                    else if (rolIndex == 6) { // Rol específico con índice 6
+                        for (int i = 0; i < 32; i++) { // Alterna entre "acción 1" y "acción 0"
+                            this.accion = (i % 2 == 0) ? 1 : 0;
+
                             // Duerme por la mitad de una hora de simulación
-                            Thread.sleep((long) this.intervaloOcio * 1000);
+                            Thread.sleep((long) this.intervaloOcio * 1000); // L para indicar que es un long
                         }
-                        this.accion = 0;
-                        Thread.sleep((long)this.horasActivas * 1000);
-                       
-                        this.dineroAcumulado += (this.salarioPorHora * 24);
+
+                        this.accion = 0; // Resetea la acción después del ciclo
+                        Thread.sleep((long) this.horasActivas * 1000); // Duerme por el tiempo de horas activas
+
+                        // Actualiza el dinero acumulado y los costos operativos de la empresa
+                        this.dineroAcumulado += this.salarioPorHora * 24;
                         empresa.actualizarCostosOperativos();
-                        
-                        if(empresa.deadLine > 0){
-                                 empresa.deadLine -= 1;
-                        empresa.actualizarDeadline(empresa.deadLine);
+
+                        // Actualiza el deadline de la empresa si es mayor que 0
+                        if (empresa.deadLine > 0) {
+                            empresa.deadLine -= 1;
+                            empresa.actualizarDeadline(empresa.deadLine);
                         }
-                   
-                    }
-                    //Director 
-                    else if (rolIndex == 7){
-                        this.dineroAcumulado += (this.salarioPorHora * 24);
+
+                    } else if (rolIndex == 7) { // Director, índice 7
+                        // Actualiza el dinero acumulado y los costos operativos de la empresa
+                        this.dineroAcumulado += this.salarioPorHora * 24;
                         empresa.actualizarCostosOperativos();
+
+                        // Calcula el tiempo restante para chequeo
                         int resto = (this.segundosDia / 24) - this.chequeoDelPM;
-                        
+
                         if (empresa.deadLine == 0) {
-                            this.accion = 1;
-                            Thread.sleep((long) this.segundosDia);
-                            //empresa.setDeadLine();
+                            this.accion = 0;
+                            Thread.sleep((long)this.segundosDia * 1000); // Duerme por todo el día en segundos
+
+                            // Reinicia el deadline y manda computadoras
                             empresa.reiniciarDeadLine();
                             empresa.mandarComputadoras();
                         }
-                        else {
-                            Random random = new Random();
-                          
 
-                            for (int i = 0; i < 24; i++) {
-                                if (i == random.nextInt(24)) {
-                                    this.accion = 1;
-                                    revisarPM();
-                                    Thread.sleep((long) this.chequeoDelPM * 1000);
-                                    revisarPM();
-                                    Thread.sleep(resto);
-                                } else {
-                                    this.accion = 0;
-                                    Thread.sleep(resto);
-                                }
+                        Random random = new Random();
+                        int r = random.nextInt(24);
+                        
+                        for (int i = 0; i < 24; i++) {
+                            if (i == r) {
+                                this.accion = 1;
+                                revisarPM(); // Primera revisión del PM
+                                Thread.sleep((long) this.chequeoDelPM * 1000); // Espera el tiempo de chequeo
+                                revisarPM(); // Segunda revisión del PM
+                                Thread.sleep((long)resto * 1000); // Duerme por el tiempo restante del día
+                            } else {
+                                this.accion = 0;
+                                Thread.sleep((long)segundosDia / 24 * 1000); // Duerme por el tiempo restante del día
                             }
                         }
                     }
+
                 } else if (activo == 2) {
                     synchronized (almacen) {
                         if (almacen.almacen[rolIndex] < almacen.capacidadMax[rolIndex]) {
@@ -252,11 +255,11 @@ public class Trabajador extends Thread {
                         }
                     } // 60 * 60
                     
-//                    contador += 1;
-//                    if (contador == 1440){
-//                        this.dineroAcumulado += (this.salarioPorHora);
-//                        contador = 0;
-//                    }
+                    contador += 1;
+                    if (contador == 1440){
+                        this.dineroAcumulado += (this.salarioPorHora);
+                        contador = 0;
+                    }
                     Thread.sleep(this.segundosDia * 1 / 86400 * 1000); //duracion de 1 segundo en relacion al tiempo del dia
                 }
                 
@@ -273,7 +276,7 @@ public class Trabajador extends Thread {
         if (this.accion == empresa.listaTrabajadores[20].accion){
             empresa.listaTrabajadores[20].descontado++;
             empresa.actualizarCostosOperativos();
- }
+    }
 
     }
     

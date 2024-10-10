@@ -98,20 +98,8 @@ public class Empresa {
         this.gananciasBrutas = gananciasBrutas;
     }
 
-    public int getCostoOperaciones() {
-        return costoOperaciones;
-    }
-
-    public void setCostoOperaciones(int costoOperaciones) {
-        this.costoOperaciones = costoOperaciones;
-    }
-
     public int getUtilidad() {
         return utilidad;
-    }
-
-    public void setUtilidad(int gananciasBrutas, int costoOperaciones) {
-        this.utilidad = gananciasBrutas - costoOperaciones;
     }
 
     public int getComputadorasProducidas() {
@@ -263,24 +251,34 @@ public class Empresa {
     }
     
     public void actualizarCostosOperativos(){
-        
         synchronized (this) {
-                    for (int i = 0; i < this.listaTrabajadores.length; i++) {
-                        this.costoOperaciones += this.listaTrabajadores[i].dineroAcumulado;
-                    }
-                    
+            int b = 0;
+            // Verificar si listaTrabajadores no es null
+            if (this.listaTrabajadores != null) {
+                for (int i = 0; i < this.listaTrabajadores.length; i++) {
+                    b += this.listaTrabajadores[i].dineroAcumulado;
+                }
+                this.costoOperaciones = b;
+
+                // Asegurarse de que el índice 20 existe en listaTrabajadores
+                if (this.listaTrabajadores.length > 20 && this.listaTrabajadores[20] != null) {
                     if (this.faltas < this.listaTrabajadores[20].descontado){
                         this.faltas = this.listaTrabajadores[20].descontado;
                         this.costoOperaciones -= 100;
                         actualizarUtilidad();
                     }
-        
-        
-                 SwingUtilities.invokeLater(() -> {
-                    labels[7].setText("Costos Operativos:$ " + this.costoOperaciones);
+                }
+            }
+
+            // Asegurarse de que labels no es null y tiene el índice 7
+            if (labels != null && labels.length > 7 && labels[7] != null) {
+                SwingUtilities.invokeLater(() -> {
+                    labels[7].setText("Costos Operativos: $ " + this.costoOperaciones);
                 });
+            }
         }
     }
+
     
         public void actualizarGananciasBruto(int computadoras, int computadorasGraficas){
         
@@ -304,10 +302,10 @@ public class Empresa {
         
         public void actualizarUtilidad(){
             
-            this.utilidad = this.gananciasBrutas - this.costoOperaciones;
-              SwingUtilities.invokeLater(() -> {
-                    labels[9].setText("Utilidad:$ " + this.utilidad);
-                });
+//            this.utilidad = this.gananciasBrutas - this.costoOperaciones;
+//              SwingUtilities.invokeLater(() -> {
+//                    labels[9].setText("Utilidad:$ " + this.utilidad);
+//                });
         }
         
             public void actualizarDeadline(int deadline){

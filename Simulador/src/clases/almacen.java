@@ -8,7 +8,7 @@ public class Almacen {
   
     private JLabel[] label;
     public int[] almacen;
-    private final String[] componentes;
+    public final String[] componentes;
     public final int[] capacidadMax;
     public final Semaphore[] semaforos;
     private int contadorComputadorasEnsambladas = 0; // Contador global para computadoras ensambladas
