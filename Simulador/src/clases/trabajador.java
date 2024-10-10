@@ -143,7 +143,7 @@ public class Trabajador extends Thread {
                         Thread.sleep((long) diasParaGenerarProducto * 1000);
                         System.out.println(Arrays.toString(this.almacen.almacen));
                         
-                        this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto);
+                        this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto );
                         empresa.actualizarCostosOperativos();
                         
                         synchronized (almacen) {
@@ -161,24 +161,26 @@ public class Trabajador extends Thread {
                         
                         if (esConTarjetaGrafica) {
                             computadoras = this.pcTGrafica;
-                            System.out.println("Ensamblando computadora con tarjeta gráfica obligatoriamente.");
+                            //System.out.println("Ensamblando computadora con tarjeta gráfica obligatoriamente.");
                         } else {
                             computadoras = this.pcNormal;
                         }
 
-                        this.dineroAcumulado += (this.salarioPorHora * 24);                        
+                 
                         
                         synchronized (almacen) {
                             if (almacen.verificarDisponibilidad(computadoras)) {
                                 Thread.sleep((long) diasParaGenerarProducto * 1000);
+                                 this.dineroAcumulado += (this.salarioPorHora * 24 * diasParaGenerarProducto);                        
+                                empresa.actualizarCostosOperativos();
                                 this.almacen.quitarComponente(computadoras);
 
                                 if (esConTarjetaGrafica) {
                                     almacen.agregarComponente(this.rolIndex + 1); // Agregar computadora con tarjeta gráfica
-                                    empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
+                                   // empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
                                 } else {
                                     almacen.agregarComponente(this.rolIndex); // Agregar computadora normal
-                                    empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
+                                    //empresa.actualizarGananciasBruto(this.almacen.almacen[5], this.almacen.almacen[6]);
                                 }
                                 System.out.println("Trabajador " + ide + " ha ensamblado una computadora.");
                                
@@ -189,6 +191,7 @@ public class Trabajador extends Thread {
                             }
                         }
                     }
+                    //Project Manager
                     else if (rolIndex == 6){
                         for (int i = 0; i < 32; i++) { //1 anime, 0 activo
                             if (i % 2 == 0) {
@@ -201,24 +204,32 @@ public class Trabajador extends Thread {
                         }
                         this.accion = 0;
                         Thread.sleep((long)this.horasActivas * 1000);
-                        
+                       
                         this.dineroAcumulado += (this.salarioPorHora * 24);
-
-                        empresa.deadLine -= 1;
+                        empresa.actualizarCostosOperativos();
+                        
+                        if(empresa.deadLine > 0){
+                                 empresa.deadLine -= 1;
+                        empresa.actualizarDeadline(empresa.deadLine);
+                        }
+                   
                     }
+                    //Director 
                     else if (rolIndex == 7){
-                        this.dineroAcumulado += (this.salarioPorHora * 24);////////////////////////////////////
+                        this.dineroAcumulado += (this.salarioPorHora * 24);
+                        empresa.actualizarCostosOperativos();
                         int resto = (this.segundosDia / 24) - this.chequeoDelPM;
                         
                         if (empresa.deadLine == 0) {
                             this.accion = 1;
                             Thread.sleep((long) this.segundosDia);
-                            empresa.setDeadLine();
+                            //empresa.setDeadLine();
+                            empresa.reiniciarDeadLine();
                             empresa.mandarComputadoras();
                         }
                         else {
                             Random random = new Random();
-                            int randomHour = random.nextInt(24);
+                          
 
                             for (int i = 0; i < 24; i++) {
                                 if (i == random.nextInt(24)) {
@@ -241,11 +252,11 @@ public class Trabajador extends Thread {
                         }
                     } // 60 * 60
                     
-                    contador += 1;
-                    if (contador == 1440){
-                        this.dineroAcumulado += (this.salarioPorHora);
-                        contador = 0;
-                    }
+//                    contador += 1;
+//                    if (contador == 1440){
+//                        this.dineroAcumulado += (this.salarioPorHora);
+//                        contador = 0;
+//                    }
                     Thread.sleep(this.segundosDia * 1 / 86400 * 1000); //duracion de 1 segundo en relacion al tiempo del dia
                 }
                 

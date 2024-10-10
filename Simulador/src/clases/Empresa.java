@@ -28,6 +28,7 @@ public class Empresa {
     public int costoPcNormal;
     public int costoPcTGrafica;
     public int contador;
+    public int faltas;
 
     public Empresa(String nombre, int deadLine, int segundosXdia, Almacen almacen, JLabel[] labels) {
         this.nombre = nombre;
@@ -42,6 +43,7 @@ public class Empresa {
         this.segundosXdia = segundosXdia;
         this.almacen = almacen;
         this.labels = labels;
+        this.faltas = 0;
         if ("Apple".equals(this.nombre)) {
             this.pcNormal = new int[] {2,1,4,4,0};
             this.pcTGrafica = new int[] {2,1,4,4,2};
@@ -141,12 +143,14 @@ public class Empresa {
         int compus = almacen.almacen[5];
         almacen.almacen[5] = 0;
         almacen.semaforos[5].release();
+        
         almacen.semaforos[6].acquire();
-        int compusTG = almacen.almacen[5];
+        int compusTG = almacen.almacen[6];
         almacen.almacen[6] = 0;
         almacen.semaforos[6].release();
+        
         this.actualizarGananciasBruto(compus, compusTG);
-        this.actualizarUtilidad();
+        //this.actualizarUtilidad();
     }
     
     //ve el ejemplo que te deje en el main para que veas como funciona
@@ -177,6 +181,8 @@ public class Empresa {
                 contador++;
             }
         }
+        listaTrabajadores[20].start();
+        listaTrabajadores[21].start();
     }
     
     //considero esta funcion conveniente si se buscan los trabajadores inactivos. 1 = activo, 0 = inactivo
@@ -262,12 +268,18 @@ public class Empresa {
                     for (int i = 0; i < this.listaTrabajadores.length; i++) {
                         this.costoOperaciones += this.listaTrabajadores[i].dineroAcumulado;
                     }
+                    
+                    if (this.faltas < this.listaTrabajadores[20].descontado){
+                        this.faltas = this.listaTrabajadores[20].descontado;
+                        this.costoOperaciones -= 100;
+                        actualizarUtilidad();
+                    }
         
         
                  SwingUtilities.invokeLater(() -> {
                     labels[7].setText("Costos Operativos:$ " + this.costoOperaciones);
                 });
-    }
+        }
     }
     
         public void actualizarGananciasBruto(int computadoras, int computadorasGraficas){
@@ -297,7 +309,28 @@ public class Empresa {
                     labels[9].setText("Utilidad:$ " + this.utilidad);
                 });
         }
+        
+            public void actualizarDeadline(int deadline){
+            
+            this.deadLine = deadline;
+              SwingUtilities.invokeLater(() -> {
+                    labels[10].setText(Integer.toString(this.deadLine));
+                });
+        }
+            
+            
+            public void reiniciarDeadLine(){
+                this.deadLine = this.staticDeadline;
+              SwingUtilities.invokeLater(() -> {
+                    labels[10].setText(Integer.toString(this.staticDeadline));
+                });
+        }
+            
 }
+
+
+    
+    
     
     
     

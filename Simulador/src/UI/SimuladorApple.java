@@ -36,7 +36,7 @@ public class SimuladorApple extends javax.swing.JFrame {
         //costosOperativos = costosOperativosLabel;
         
         labels = new JLabel[] {cantidadPlaca,cantidadCPU,cantidadRAM,cantidadFuentes,
-            cantidadTarjetas,cantidadComputadoras,cantidadComputadorasGraficas, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel};
+            cantidadTarjetas,cantidadComputadoras,cantidadComputadorasGraficas, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel};
         spinners = new  JSpinner[]{placaSpinner, cpuSpinner, ramSpinner, fuentesSpinner, tarjetasSpinner, ensambladoresSpinner};
         
         
@@ -91,6 +91,9 @@ public class SimuladorApple extends javax.swing.JFrame {
              this.spinners[i].setValue(valores[i]);
         }
           
+            deadlineLabel.setText(Integer.toString(t.deadline));
+
+          
           
                    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
                 System.out.println(empresa.listaTrabajadores[i].rol);             
@@ -125,7 +128,7 @@ public class SimuladorApple extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         laborDirector = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        deadlineLabel = new javax.swing.JLabel();
         descuentoPM = new javax.swing.JLabel();
         utilidadLabel = new javax.swing.JLabel();
         gananciasBrutoLabel = new javax.swing.JLabel();
@@ -280,12 +283,12 @@ public class SimuladorApple extends javax.swing.JFrame {
         laborDirector.setOpaque(true);
         jPanel1.add(laborDirector, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 540, 270, 60));
 
-        jLabel10.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("0");
-        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 200, 30));
+        deadlineLabel.setBackground(new java.awt.Color(255, 255, 255));
+        deadlineLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        deadlineLabel.setForeground(new java.awt.Color(0, 0, 0));
+        deadlineLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        deadlineLabel.setText("0");
+        jPanel1.add(deadlineLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 200, 30));
 
         descuentoPM.setBackground(new java.awt.Color(255, 255, 255));
         descuentoPM.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -819,13 +822,13 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JLabel cantidadTarjetas;
     private javax.swing.JLabel costosOperativosLabel;
     private javax.swing.JSpinner cpuSpinner;
+    private javax.swing.JLabel deadlineLabel;
     private javax.swing.JLabel descuentoPM;
     private javax.swing.JSpinner ensambladoresSpinner;
     private javax.swing.JLabel faltasPM;
     private javax.swing.JSpinner fuentesSpinner;
     private javax.swing.JLabel gananciasBrutoLabel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
