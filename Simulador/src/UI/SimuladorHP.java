@@ -33,7 +33,8 @@ public class SimuladorHP extends javax.swing.JFrame {
         this.setLocationRelativeTo(this);
         this.setResizable(false);
           labels = new JLabel[] {cantidadPlaca2,cantidadCPU2,cantidadRAM2,cantidadFuentes2,
-            cantidadTarjetas2,cantidadComputadoras2,cantidadComputadorasGraficas2, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel};
+            cantidadTarjetas2,cantidadComputadoras2,cantidadComputadorasGraficas2, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel,
+          laborPM2, faltasPM2, laborDirector2, descuentoPM2};
           spinners = new  JSpinner[]{placaSpinner2, cpuSpinner2, ramSpinner2, fuentesSpinner2, tarjetasSpinner2, ensambladoresSpinner2};
         
         SetImageLabel(jLabel1, "src/imagenes/12-Light.jpg");

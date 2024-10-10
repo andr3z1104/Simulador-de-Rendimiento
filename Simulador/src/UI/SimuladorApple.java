@@ -36,7 +36,8 @@ public class SimuladorApple extends javax.swing.JFrame {
         //costosOperativos = costosOperativosLabel;
         
         labels = new JLabel[] {cantidadPlaca,cantidadCPU,cantidadRAM,cantidadFuentes,
-            cantidadTarjetas,cantidadComputadoras,cantidadComputadorasGraficas, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel};
+            cantidadTarjetas,cantidadComputadoras,cantidadComputadorasGraficas, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel,
+        laborPM, faltasPM, laborDirector, descuentoPM};
         spinners = new  JSpinner[]{placaSpinner, cpuSpinner, ramSpinner, fuentesSpinner, tarjetasSpinner, ensambladoresSpinner};
         
         

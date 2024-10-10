@@ -262,23 +262,33 @@ public class Empresa {
         }
     }
     
-    public void actualizarCostosOperativos(){
-        
+public void actualizarCostosOperativos(){
         synchronized (this) {
-                    for (int i = 0; i < this.listaTrabajadores.length; i++) {
-                        this.costoOperaciones += this.listaTrabajadores[i].dineroAcumulado;
-                    }
-                    
+            int b = 0;
+            // Verificar si listaTrabajadores no es null
+            if (this.listaTrabajadores != null) {
+                for (int i = 0; i < this.listaTrabajadores.length; i++) {
+                    b += this.listaTrabajadores[i].dineroAcumulado;
+                }
+                this.costoOperaciones = b;
+
+                // Asegurarse de que el índice 20 existe en listaTrabajadores
+                if (this.listaTrabajadores.length > 20 && this.listaTrabajadores[20] != null) {
                     if (this.faltas < this.listaTrabajadores[20].descontado){
                         this.faltas = this.listaTrabajadores[20].descontado;
                         this.costoOperaciones -= 100;
+                        actualizarDescontadoPM(faltas);
                         actualizarUtilidad();
                     }
-        
-        
-                 SwingUtilities.invokeLater(() -> {
-                    labels[7].setText("Costos Operativos:$ " + this.costoOperaciones);
+                }
+            }
+
+            // Asegurarse de que labels no es null y tiene el índice 7
+            if (labels != null && labels.length > 7 && labels[7] != null) {
+                SwingUtilities.invokeLater(() -> {
+                    labels[7].setText("Costos Operativos: $ " + this.costoOperaciones);
                 });
+            }
         }
     }
     
@@ -288,7 +298,7 @@ public class Empresa {
                     int gananciasComputadora = computadoras * this.costoPcNormal;
                     int gananciasComputadoraGrafica = computadorasGraficas * this.costoPcTGrafica;
                     
-                    this.gananciasBrutas = gananciasComputadora + gananciasComputadoraGrafica;
+                    this.gananciasBrutas += gananciasComputadora + gananciasComputadoraGrafica;
         
         
                  SwingUtilities.invokeLater(() -> {
@@ -324,6 +334,69 @@ public class Empresa {
               SwingUtilities.invokeLater(() -> {
                     labels[10].setText(Integer.toString(this.staticDeadline));
                 });
+        }
+            
+                     
+            public void actualizarFaltasPM(){
+               
+              SwingUtilities.invokeLater(() -> {
+                    labels[12].setText(("Faltas: " + this.faltas));
+                });
+        }
+            
+            
+            public synchronized void actualizarActividadPM(int accion){
+               if(accion == 1){
+
+                                 SwingUtilities.invokeLater(() -> {
+                                     //System.out.println("Actualizando JLabel a modo otaco");
+                    labels[11].setText("Project Manager: Modo OTACO");
+                });
+                   
+               }
+               
+               else{
+                                 SwingUtilities.invokeLater(() -> {
+                                     //ystem.out.println("Actualizando JLabel a modo SERIO");
+                    labels[11].setText("Project Manager: Modo SERIO");
+                });
+               }
+
+        }
+
+             public synchronized void actualizarActividadDirector(int accion){
+               if(accion == 1){
+
+                                 SwingUtilities.invokeLater(() -> {
+                                     //System.out.println("Actualizando JLabel a modo otaco");
+                    labels[13].setText("Director: Enviando Computadoras");
+                });
+                   
+               }
+               else if(accion == 2){
+                            SwingUtilities.invokeLater(() -> {
+ 
+                    labels[13].setText("Director: Chequeando PM");
+                });
+               }
+               
+               else{
+                                 SwingUtilities.invokeLater(() -> {
+                                     //ystem.out.println("Actualizando JLabel a modo SERIO");
+                    labels[13].setText("Administracion");
+                });
+               }
+
+        }
+             
+                        public synchronized void actualizarDescontadoPM(int faltas){
+                                int descontado = faltas * 100;
+                                 SwingUtilities.invokeLater(() -> {
+                                     //System.out.println("Actualizando JLabel a modo otaco");
+                    labels[14].setText("Descontado:-$"+descontado );
+                });
+         
+
         }
             
 }
