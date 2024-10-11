@@ -152,7 +152,7 @@ public class Empresa {
         almacen.semaforos[6].acquire();
         int compusTG = almacen.almacen[6];
         almacen.almacen[6] = 0;
-        labels[5].setText("Cantidad Computadoras Graficas: " + almacen.almacen[0]);
+        labels[6].setText("Cantidad Computadoras Graficas: " + almacen.almacen[6]);
         almacen.semaforos[6].release();
         
         this.actualizarGananciasBruto(compus, compusTG);
