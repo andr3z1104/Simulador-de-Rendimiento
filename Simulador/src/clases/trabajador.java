@@ -146,8 +146,9 @@ public class Trabajador extends Thread {
     @Override
     public void run() {
         int contador = 0;
+        try{
         while (activo == 1) {
-            try {
+             
                 if (activo == 1) {
                     if (rolIndex >= 0 && rolIndex <= 4) { // Roles que crean componentes
                         Thread.sleep((long) this.diasParaGenerarProducto);
@@ -162,7 +163,8 @@ public class Trabajador extends Thread {
 
                             } else {
                                 System.out.println("Inventario lleno. Trabajador " + ide + " esperando...");
-                                this.activo = 2; // Cambiar a estado de espera
+                                //this.activo = 2; // Cambiar a estado de espera
+                                Thread.sleep((long )this.segundosDia*1000/24);
                             }
                         }
                     } else if (rolIndex == 5) { // Ensamblador
@@ -268,29 +270,30 @@ public class Trabajador extends Thread {
                             }
                         }
                     }
-
-                } else if (activo == 2) {
-                    synchronized (almacen) {
+}}
+                 if (activo == 2) {
+                    while(activo==2){
+                                            synchronized (almacen) {
                         if (almacen.almacen[rolIndex] < almacen.capacidadMax[rolIndex]) {
                             activo = 1; // Reactivarse cuando haya espacio
+                           
                         }
                     } // 60 * 60
-                    
-                    contador += 1;
-                    if (contador == 1440){
-                        this.dineroAcumulado += (this.salarioPorHora);
-                        contador = 0;
+
+                       this.dineroAcumulado += (this.salarioPorHora);
+
+                    Thread.sleep(this.segundosDia * 1 * 1000 / 24); //duracion de 1 segundo en relacion al tiempo del dia
                     }
-                    Thread.sleep(this.segundosDia * 1 * 1000 / 86400); //duracion de 1 segundo en relacion al tiempo del dia
+
                 }
-                
-            } catch (InterruptedException e) {
+      
+        }catch (InterruptedException e) {
                 System.out.println("Error: " + e.getMessage());
                 Thread.currentThread().interrupt();
-                break;
             }
-        }
+        
         System.out.println("Trabajador " + ide + " ha detenido su ejecución.");
+        
     }
     
     public void revisarPM(){

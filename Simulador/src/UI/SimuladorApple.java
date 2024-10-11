@@ -542,7 +542,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.placaSpinner.setValue((int)this.placaSpinner.getValue() - 1);
                 this.repaint();
@@ -596,7 +596,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.cpuSpinner.setValue((int)this.cpuSpinner.getValue() - 1);
                 this.repaint();
@@ -650,7 +650,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.ramSpinner.setValue((int)this.ramSpinner.getValue() - 1);
                 this.repaint();
@@ -704,7 +704,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.fuentesSpinner.setValue((int)this.fuentesSpinner.getValue() - 1);
                 this.repaint();
@@ -758,7 +758,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.tarjetasSpinner.setValue((int)this.tarjetasSpinner.getValue() - 1);
                 this.repaint();
@@ -812,7 +812,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     }
         
         
-        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 19){  
+        if((int)this.placaSpinner.getValue() + (int)this.cpuSpinner.getValue() + (int)this.ramSpinner.getValue() + (int)this.fuentesSpinner.getValue() + (int)this.tarjetasSpinner.getValue() + (int)this.ensambladoresSpinner.getValue() > 20){  
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.ensambladoresSpinner.setValue((int)this.ensambladoresSpinner.getValue() - 1);
                 this.repaint();
