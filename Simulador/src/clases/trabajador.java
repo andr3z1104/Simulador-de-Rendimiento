@@ -178,11 +178,13 @@ public class Trabajador extends Thread {
 
                  
                         
-                        synchronized (almacen) {
+
                             if (almacen.verificarDisponibilidad(computadoras)) {
                                 Thread.sleep((long) this.diasParaGenerarProducto);
+                                
                                 this.dineroAcumulado += (int) (this.salarioPorHora * 24 * this.multiplier);                        
                                 empresa.actualizarCostosOperativos();
+                                
                                 this.almacen.quitarComponente(computadoras);
 
                                 if (esConTarjetaGrafica) {
@@ -196,10 +198,11 @@ public class Trabajador extends Thread {
                                
                                  
                                 almacen.incrementarContadorComputadoras(esConTarjetaGrafica);
-                            } else {
-                                Thread.sleep(this.segundosDia * 1000); //duracion de 1 milisegundo en relacion al tiempo del dia
+                            } 
+                            else{      
+                        Thread.sleep(this.segundosDia * 1000); //duracion de 1 milisegundo en relacion al tiempo del dia
+                            
                             }
-                        }
                     }
                     //Project Manager
                     else if (rolIndex == 6) { // Rol específico con índice 6

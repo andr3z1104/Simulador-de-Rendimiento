@@ -146,11 +146,13 @@ public class Empresa {
         almacen.semaforos[5].acquire();
         int compus = almacen.almacen[5];
         almacen.almacen[5] = 0;
+        labels[5].setText("Cantidad Computadoras: " + almacen.almacen[5]);
         almacen.semaforos[5].release();
         
         almacen.semaforos[6].acquire();
         int compusTG = almacen.almacen[6];
         almacen.almacen[6] = 0;
+        labels[5].setText("Cantidad Computadoras Graficas: " + almacen.almacen[0]);
         almacen.semaforos[6].release();
         
         this.actualizarGananciasBruto(compus, compusTG);
@@ -450,10 +452,10 @@ public void actualizarCostosOperativos(){
             String t = Integer.toString(tarjeta);
             String e = Integer.toString(ensamblador);
             
-            String texto = p + "," + c + "," + r + "," + f + "," + t + "," + e + ","; 
-            bw.write(this.segundosXdia);
+            String texto = p + "," + c + "," + r + "," + f + "," + t + "," + e + ",";
+            bw.write(Integer.toString(this.segundosXdia));
             bw.newLine();
-            bw.write(this.staticDeadline);
+            bw.write(Integer.toString(this.staticDeadline));
             bw.newLine();
             bw.write(texto);
         } catch (IOException e) {

@@ -12,6 +12,9 @@ import clases.*;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 
 //JLABEL 40 - 46 Cantidad Almacenes
 /**
@@ -25,12 +28,15 @@ public class SimuladorApple extends javax.swing.JFrame {
            private Controlador controlador;
            private JLabel[] labels;
            private JSpinner[] spinners;
+           public Grafica g;
+           
     /**
      * Creates new form SimuladorApple
      */
     public SimuladorApple() {
         initComponents();
         this.setLocationRelativeTo(this);
+        this.setLocation(50, 0);
         this.setResizable(false);
         
         //costosOperativos = costosOperativosLabel;
@@ -93,14 +99,34 @@ public class SimuladorApple extends javax.swing.JFrame {
         }
           
             deadlineLabel.setText(Integer.toString(t.deadline));
-
-          
+            int disponibles = 0;
+            
+            for (int i = 0; i < empresa.listaTrabajadores.length-2; i++) {
+            if(empresa.listaTrabajadores[i].rol == null){
+                disponibles++;
+            }
+        }
+            
+          trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
           
                    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
                 System.out.println(empresa.listaTrabajadores[i].rol);             
             }
                    
                    System.out.println(empresa.deadLine);
+     
+    }
+    
+       public int chequearTrabajadoresDisponibles(){
+                int disponibles = 0;
+            
+            for (int i = 0; i < empresa.listaTrabajadores.length-2; i++) {
+            if(empresa.listaTrabajadores[i].activo == 0){
+                disponibles++;
+            }
+        }
+            return disponibles;
+        
     }
 
     /**
@@ -113,12 +139,13 @@ public class SimuladorApple extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        crearArchivoTXT = new javax.swing.JButton();
         ensambladoresSpinner = new javax.swing.JSpinner();
         placaSpinner = new javax.swing.JSpinner();
         cpuSpinner = new javax.swing.JSpinner();
         ramSpinner = new javax.swing.JSpinner();
         fuentesSpinner = new javax.swing.JSpinner();
-        jLabel29 = new javax.swing.JLabel();
+        trabajadoresDisponiblesLabel = new javax.swing.JLabel();
         tarjetasSpinner = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -178,6 +205,14 @@ public class SimuladorApple extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 700));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        crearArchivoTXT.setText("Cargar Archivo");
+        crearArchivoTXT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crearArchivoTXTActionPerformed(evt);
+            }
+        });
+        jPanel1.add(crearArchivoTXT, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 630, 130, 60));
+
         ensambladoresSpinner.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         ensambladoresSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -218,13 +253,13 @@ public class SimuladorApple extends javax.swing.JFrame {
         });
         jPanel1.add(fuentesSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 330, 110, 50));
 
-        jLabel29.setBackground(new java.awt.Color(245, 245, 245));
-        jLabel29.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel29.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel29.setText("Trabajadores Disponibles: X");
-        jLabel29.setToolTipText("");
-        jLabel29.setOpaque(true);
-        jPanel1.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 270, 30));
+        trabajadoresDisponiblesLabel.setBackground(new java.awt.Color(245, 245, 245));
+        trabajadoresDisponiblesLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        trabajadoresDisponiblesLabel.setForeground(new java.awt.Color(0, 0, 0));
+        trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: 0");
+        trabajadoresDisponiblesLabel.setToolTipText("");
+        trabajadoresDisponiblesLabel.setOpaque(true);
+        jPanel1.add(trabajadoresDisponiblesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 270, 30));
 
         tarjetasSpinner.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         tarjetasSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -511,6 +546,10 @@ public class SimuladorApple extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.placaSpinner.setValue((int)this.placaSpinner.getValue() - 1);
                 this.repaint();
+        }       else if((int)placaSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.placaSpinner.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -523,6 +562,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(0, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -533,6 +575,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -555,6 +600,10 @@ public class SimuladorApple extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.cpuSpinner.setValue((int)this.cpuSpinner.getValue() - 1);
                 this.repaint();
+        }       else if((int)cpuSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.cpuSpinner.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -567,6 +616,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(1, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -577,6 +629,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -599,6 +654,10 @@ public class SimuladorApple extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.ramSpinner.setValue((int)this.ramSpinner.getValue() - 1);
                 this.repaint();
+        }       else if((int)ramSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.ramSpinner.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -611,6 +670,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(2, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -621,6 +683,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -643,6 +708,10 @@ public class SimuladorApple extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.fuentesSpinner.setValue((int)this.fuentesSpinner.getValue() - 1);
                 this.repaint();
+        }       else if((int)fuentesSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.fuentesSpinner.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -655,6 +724,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(3, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -665,6 +737,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -687,6 +762,10 @@ public class SimuladorApple extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.tarjetasSpinner.setValue((int)this.tarjetasSpinner.getValue() - 1);
                 this.repaint();
+        }       else if((int)tarjetasSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.tarjetasSpinner.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -699,6 +778,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(4, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -709,6 +791,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -732,6 +817,11 @@ public class SimuladorApple extends javax.swing.JFrame {
                 this.ensambladoresSpinner.setValue((int)this.ensambladoresSpinner.getValue() - 1);
                 this.repaint();
         }
+        else if((int)ensambladoresSpinner.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.ensambladoresSpinner.setValue(1);
+                this.repaint();
+        }
         else{
             
             // Lógica para asignar o quitar roles de acuerdo al cambio.
@@ -743,6 +833,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(5, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -753,6 +846,9 @@ public class SimuladorApple extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+          
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -770,6 +866,11 @@ public class SimuladorApple extends javax.swing.JFrame {
 //        }
 //        }
     }//GEN-LAST:event_cantidadPlacaPropertyChange
+
+    private void crearArchivoTXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearArchivoTXTActionPerformed
+           empresa.generarArchivo();
+           JOptionPane.showMessageDialog(null,"Archivo Guardado!");
+    }//GEN-LAST:event_crearArchivoTXTActionPerformed
 
     /**
      * @param args the command line arguments
@@ -823,6 +924,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JLabel cantidadTarjetas;
     private javax.swing.JLabel costosOperativosLabel;
     private javax.swing.JSpinner cpuSpinner;
+    private javax.swing.JButton crearArchivoTXT;
     private javax.swing.JLabel deadlineLabel;
     private javax.swing.JLabel descuentoPM;
     private javax.swing.JSpinner ensambladoresSpinner;
@@ -842,7 +944,6 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
@@ -869,6 +970,7 @@ public class SimuladorApple extends javax.swing.JFrame {
     private javax.swing.JSpinner placaSpinner;
     private javax.swing.JSpinner ramSpinner;
     private javax.swing.JSpinner tarjetasSpinner;
+    private javax.swing.JLabel trabajadoresDisponiblesLabel;
     private javax.swing.JLabel utilidadLabel;
     // End of variables declaration//GEN-END:variables
 
@@ -895,4 +997,15 @@ public class SimuladorApple extends javax.swing.JFrame {
     public void setAlmacen(Almacen almacen) {
         this.almacen = almacen;
     }
+
+    public Grafica getG() {
+        return g;
+    }
+
+    public void setG(Grafica g) {
+        this.g = g;
+    }
+    
+    
+    
 }

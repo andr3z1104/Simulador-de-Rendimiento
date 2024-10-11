@@ -24,6 +24,7 @@ public class SimuladorHP extends javax.swing.JFrame {
            private Controlador controlador;
                       private JLabel[] labels;
                                  private JSpinner[] spinners;
+                                            public Grafica g;
 
     /**
      * Creates new form SimuladorApple
@@ -31,6 +32,7 @@ public class SimuladorHP extends javax.swing.JFrame {
     public SimuladorHP() {
         initComponents();
         this.setLocationRelativeTo(this);
+        this.setLocation(750, -10);
         this.setResizable(false);
           labels = new JLabel[] {cantidadPlaca2,cantidadCPU2,cantidadRAM2,cantidadFuentes2,
             cantidadTarjetas2,cantidadComputadoras2,cantidadComputadorasGraficas2, costosOperativosLabel, gananciasBrutoLabel, utilidadLabel, deadlineLabel,
@@ -87,14 +89,15 @@ public class SimuladorHP extends javax.swing.JFrame {
          
             deadlineLabel.setText(Integer.toString(t2.deadline));
 
+            
+            trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
            
    
                    for (int i = 0; i < empresa.listaTrabajadores.length; i++) {
                 System.out.println(empresa.listaTrabajadores[i].rol);             
             }
-                   
-  
- 
+
+                 //  g.setHp(this);
     }
 
     /**
@@ -112,9 +115,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         cpuSpinner2 = new javax.swing.JSpinner();
         ramSpinner2 = new javax.swing.JSpinner();
         fuentesSpinner2 = new javax.swing.JSpinner();
-        jLabel29 = new javax.swing.JLabel();
+        trabajadoresDisponiblesLabel = new javax.swing.JLabel();
         tarjetasSpinner2 = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -212,13 +216,13 @@ public class SimuladorHP extends javax.swing.JFrame {
         });
         jPanel1.add(fuentesSpinner2, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 330, 110, 50));
 
-        jLabel29.setBackground(new java.awt.Color(245, 245, 245));
-        jLabel29.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel29.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel29.setText("Trabajadores Disponibles: 0");
-        jLabel29.setToolTipText("");
-        jLabel29.setOpaque(true);
-        jPanel1.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 270, 30));
+        trabajadoresDisponiblesLabel.setBackground(new java.awt.Color(245, 245, 245));
+        trabajadoresDisponiblesLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        trabajadoresDisponiblesLabel.setForeground(new java.awt.Color(0, 0, 0));
+        trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: 0");
+        trabajadoresDisponiblesLabel.setToolTipText("");
+        trabajadoresDisponiblesLabel.setOpaque(true);
+        jPanel1.add(trabajadoresDisponiblesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 270, 30));
 
         tarjetasSpinner2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         tarjetasSpinner2.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -235,6 +239,14 @@ public class SimuladorHP extends javax.swing.JFrame {
         jLabel2.setText("HP");
         jLabel2.setOpaque(true);
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 150, 90));
+
+        jButton1.setText("Cargar Archivo");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 630, 120, 60));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
@@ -484,6 +496,19 @@ public class SimuladorHP extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public int chequearTrabajadoresDisponibles(){
+                int disponibles = 0;
+            
+            for (int i = 0; i < empresa.listaTrabajadores.length-2; i++) {
+            if(empresa.listaTrabajadores[i].activo == 0){
+                disponibles++;
+            }
+        }
+            return disponibles;
+        
+    }
+
+    
     //Funcion cambiar cantidad trabajadores PLACA
     private void placaSpinner2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_placaSpinner2StateChanged
               
@@ -499,6 +524,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.placaSpinner2.setValue((int)this.placaSpinner2.getValue() - 1);
                 this.repaint();
+        }   else if((int)placaSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.placaSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -511,6 +540,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(0, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -521,6 +552,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -541,6 +574,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.cpuSpinner2.setValue((int)this.cpuSpinner2.getValue() - 1);
                 this.repaint();
+        }   else if((int)cpuSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.cpuSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -553,6 +590,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(1, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -563,6 +602,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -582,6 +623,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.ramSpinner2.setValue((int)this.ramSpinner2.getValue() - 1);
                 this.repaint();
+        }       else if((int)ramSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.ramSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -594,6 +639,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(2, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -604,6 +651,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                       trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -624,6 +673,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.fuentesSpinner2.setValue((int)this.fuentesSpinner2.getValue() - 1);
                 this.repaint();
+        }       else if((int)fuentesSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.fuentesSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -636,6 +689,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(3, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -646,6 +701,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -666,6 +723,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.tarjetasSpinner2.setValue((int)this.tarjetasSpinner2.getValue() - 1);
                 this.repaint();
+        }       else if((int)tarjetasSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.tarjetasSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -678,6 +739,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(4, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -688,6 +751,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
@@ -708,6 +773,10 @@ public class SimuladorHP extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null,"Número máximo de Empleados Alcanzado!");
                 this.ensambladoresSpinner2.setValue((int)this.ensambladoresSpinner2.getValue() - 1);
                 this.repaint();
+        }       else if((int)ensambladoresSpinner2.getValue() == 1){
+            JOptionPane.showMessageDialog(null,"No puede haber cero trabajadores!");
+                this.ensambladoresSpinner2.setValue(1);
+                this.repaint();
         }
         else{
             
@@ -720,6 +789,8 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 1; // Asegúrate de marcarlo como activo si es necesario
                     empresa.listaTrabajadores[i].setRol(5, empresa.segundosXdia);
                     empresa.listaTrabajadores[i].start();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo asignar a un trabajador
                 }
             }
@@ -730,12 +801,19 @@ public class SimuladorHP extends javax.swing.JFrame {
 //                    empresa.listaTrabajadores[i].activo = 0; // Marcar como inactivo
 //                    empresa.listaTrabajadores[i].rol = null; // Limpiar el rol
                     empresa.listaTrabajadores[i].desactivar();
+                    trabajadoresDisponiblesLabel.setText("Trabajadores Disponibles: "+chequearTrabajadoresDisponibles());
+                     this.repaint();
                     break; // Solo quitar de un trabajador
                     }
                   }
                 }
             } 
     }//GEN-LAST:event_ensambladoresSpinner2StateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+           empresa.generarArchivo();
+           JOptionPane.showMessageDialog(null,"Archivo Guardado!");
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -796,6 +874,7 @@ public class SimuladorHP extends javax.swing.JFrame {
     private javax.swing.JLabel faltasPM2;
     private javax.swing.JSpinner fuentesSpinner2;
     private javax.swing.JLabel gananciasBrutoLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
@@ -809,7 +888,6 @@ public class SimuladorHP extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
@@ -836,6 +914,7 @@ public class SimuladorHP extends javax.swing.JFrame {
     private javax.swing.JSpinner placaSpinner2;
     private javax.swing.JSpinner ramSpinner2;
     private javax.swing.JSpinner tarjetasSpinner2;
+    private javax.swing.JLabel trabajadoresDisponiblesLabel;
     private javax.swing.JLabel utilidadLabel;
     // End of variables declaration//GEN-END:variables
 
@@ -863,6 +942,14 @@ public class SimuladorHP extends javax.swing.JFrame {
         this.controlador = controlador;
     }
 
+    
+        public Grafica getG() {
+        return g;
+    }
+
+    public void setG(Grafica g) {
+        this.g = g;
+    }
 
 
 }

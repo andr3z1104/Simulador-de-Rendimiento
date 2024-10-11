@@ -24,7 +24,13 @@ public class CargarArchivo extends javax.swing.JFrame {
 
     private Txt t;
     private Txt t2;
- 
+    
+    public SimuladorApple Apple;
+    public SimuladorHP HP;
+    public Graficar g;
+    
+
+
 
     /**
      * Creates new form CargarArchivo
@@ -38,10 +44,14 @@ public class CargarArchivo extends javax.swing.JFrame {
         SetImageLabel(jLabel1, "src/imagenes/HPLogo.jpg");
         SetImageLabel(jLabel3, "src/imagenes/FondoBlanco.jpg");
         
-        jLabel5.setVisible(false);
+//        jLabel5.setVisible(false);
         jLabel6.setVisible(false);
-
+        
+        this.Apple = new SimuladorApple();
+        this.HP = new SimuladorHP();
     }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,10 +66,12 @@ public class CargarArchivo extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jTextField1 = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
 
@@ -84,14 +96,25 @@ public class CargarArchivo extends javax.swing.JFrame {
         jLabel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 240, 200));
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton1.setText("Cargar TXT");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 390, 120, 50));
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("Segundos por Dia");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 350, 170, 30));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("Deadline");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, 120, 30));
+
+        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField2.setText("1");
+        jPanel1.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 390, 120, 60));
+
+        jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTextField1.setText("1");
+        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 390, 120, 60));
 
         jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton3.setText("Cargar TXT");
@@ -100,7 +123,7 @@ public class CargarArchivo extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 390, 120, 50));
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 360, 170, 50));
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton2.setText("EMPEZAR");
@@ -111,17 +134,11 @@ public class CargarArchivo extends javax.swing.JFrame {
         });
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 470, 160, 70));
 
-        jLabel5.setBackground(new java.awt.Color(0, 255, 0));
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Archivo Cargado !");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 350, 180, 110));
-
         jLabel6.setBackground(new java.awt.Color(0, 255, 0));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText("Archivo Cargado !");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 350, 180, 110));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 330, 180, 110));
 
         jLabel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 570));
@@ -168,48 +185,44 @@ public class CargarArchivo extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    //Boton de HP TXT
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JFileChooser jFileChooser2 = new JFileChooser();
-        FileNameExtensionFilter filtrado2 = new FileNameExtensionFilter("TXT","txt");
-        jFileChooser2.setFileFilter(filtrado2);
-        
-        int respuesta2 = jFileChooser2.showOpenDialog(this);
-        
-        if (respuesta2==JFileChooser.APPROVE_OPTION) {
-                File selectedFile2 = jFileChooser2.getSelectedFile();
-
-            JOptionPane.showMessageDialog(null, "El archivo se leyó "+selectedFile2.getName());
-
-            Txt  t2=new Txt();
-            String aeo2 = selectedFile2.getAbsolutePath();
-            t2.cargarArchivo(aeo2);
-            t2.leerArchivo();
-            
-            setT2(t2);
-            
-            jButton1.setVisible(false);
-           jLabel5.setVisible(true);
- 
-            
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     //Boton para INICIAR la SIMULACION
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
           
-        
-            SimuladorApple apple = new SimuladorApple();
-            apple.Arrancar(t);
-            apple.setVisible(true);
+                        
+            
+            if(t==null){
+                Txt h = new Txt();
+                h.placaBase =1;
+                h.cpu =1;
+                h.ram =1;
+                h.fuenteAlimentacion =1;
+                h.tarjetaGrafica =1;
+                h.ensamblador=1;
+                h.cpu =1;
+                h.deadline = Integer.parseInt(jTextField1.getText());
+                h.segundosXdia = Integer.parseInt(jTextField2.getText());
+                Apple.Arrancar(h);
+                Apple.setVisible(true);
+                
+                HP.Arrancar(h);
+            HP.setVisible(true);
+            }
+            else{
+                Apple.Arrancar(t);
+                Apple.setVisible(true);
+                
+                HP.Arrancar(t);
+                HP.setVisible(true);
+            }
 
             
-            
-            SimuladorHP hp = new SimuladorHP();
-            hp.Arrancar(t2);
-            hp.setVisible(true);
+           g = new Graficar(Apple, HP);
+        Grafica ventanaGrafica = new Grafica();
+               ventanaGrafica.setG(g);
+       ventanaGrafica.crearGrafica();
+       ventanaGrafica.setVisible(true);
 
-        this.dispose();
+           this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
@@ -256,7 +269,6 @@ public class CargarArchivo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
@@ -265,7 +277,10 @@ public class CargarArchivo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 
 
@@ -284,10 +299,27 @@ public class CargarArchivo extends javax.swing.JFrame {
     public void setT2(Txt t2) {
         this.t2 = t2;
     }
-    
-    
+
+    public SimuladorApple getApple() {
+        return Apple;
+    }
+
+    public void setApple(SimuladorApple Apple) {
+        this.Apple = Apple;
+    }
+
+    public SimuladorHP getHP() {
+        return HP;
+    }
+
+    public void setHP(SimuladorHP HP) {
+        this.HP = HP;
+    }
+
+
     
 
+     
     
     
 
